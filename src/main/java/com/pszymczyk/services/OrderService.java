@@ -6,7 +6,7 @@ import com.pszymczyk.events.ItemRemoved;
 import com.pszymczyk.repositiories.ConsumedOffsetEntity;
 import com.pszymczyk.repositiories.OrderEntity;
 import com.pszymczyk.repositiories.OrderRepository;
-import com.pszymczyk.repositiories.OutboxRecord;
+import com.pszymczyk.repositiories.OutboxRecordEntity;
 import com.pszymczyk.repositiories.OutboxRecordFactory;
 import com.pszymczyk.repositiories.OutboxRepository;
 import org.slf4j.Logger;
@@ -68,9 +68,9 @@ public class OrderService {
         }
         orderRepository.save(orderEntity);
 
-        OutboxRecord outboxRecord = outboxRecordFactory.create(orderEntity.getOrderId(),
+        OutboxRecordEntity outboxRecordEntity = outboxRecordFactory.create(orderEntity.getOrderId(),
             new ItemAdded(orderCommand.getOrderId(), orderCommand.getItem()));
-        outboxRepository.save(outboxRecord);
+        outboxRepository.save(outboxRecordEntity);
     }
 
     private void removeItem(OrderEntity orderEntity, OrderCommand orderCommand, int partition, long offset) {
@@ -82,8 +82,8 @@ public class OrderService {
 
         orderRepository.save(orderEntity);
 
-        OutboxRecord outboxRecord = outboxRecordFactory.create(orderEntity.getOrderId(),
+        OutboxRecordEntity outboxRecordEntity = outboxRecordFactory.create(orderEntity.getOrderId(),
             new ItemRemoved(orderCommand.getOrderId(), orderCommand.getItem()));
-        outboxRepository.save(outboxRecord);
+        outboxRepository.save(outboxRecordEntity);
     }
 }

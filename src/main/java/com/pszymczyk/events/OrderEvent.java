@@ -1,6 +1,6 @@
 package com.pszymczyk.events;
 
-interface OrderEvent {
+public interface OrderEvent {
     String getOrderId();
     String getItem();
     String getType();

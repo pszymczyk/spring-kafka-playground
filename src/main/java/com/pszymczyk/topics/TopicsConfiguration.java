@@ -8,12 +8,17 @@ import org.springframework.context.annotation.Configuration;
 public class TopicsConfiguration {
 
     @Bean
-    NewTopic orders(OrderCommandsTopic orderCommandsTopic) {
+    NewTopic orderCommands(OrderCommandsTopic orderCommandsTopic) {
         return new NewTopic(orderCommandsTopic.getName(), 1, (short) 1);
     }
 
     @Bean
     NewTopic ordersDLT(OrderCommandsTopic orderCommandsTopic) {
         return new NewTopic(orderCommandsTopic.getName()+".DLT", 1, (short) 1);
+    }
+
+    @Bean
+    NewTopic orders(OrdersTopic ordersTopic) {
+        return new NewTopic(ordersTopic.getName(), 1, (short) 1);
     }
 }

@@ -13,11 +13,11 @@ public class OutboxRecordFactory {
         this.objectMapper = objectMapper;
     }
 
-    public OutboxRecord create(String key, Object value) {
-        OutboxRecord outboxRecord = new OutboxRecord();
-        outboxRecord.setKey(key);
-        outboxRecord.setJsonValue(serialize(value));
-        return outboxRecord;
+    public OutboxRecordEntity create(String key, Object value) {
+        OutboxRecordEntity outboxRecordEntity = new OutboxRecordEntity();
+        outboxRecordEntity.setKey(key);
+        outboxRecordEntity.setJsonValue(serialize(value));
+        return outboxRecordEntity;
     }
 
     private String serialize(Object value) {
