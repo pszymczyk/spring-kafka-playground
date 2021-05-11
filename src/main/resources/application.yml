@@ -1,0 +1,11 @@
+spring:
+  kafka:
+    consumer:
+      enable-auto-commit: false
+    producer:
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+playground:
+  kafka:
+    topics:
+      orderCommands: order-commands
