@@ -81,12 +81,16 @@ public class OrderEntity {
         }
         orderItem.ifPresent(orderItemEntity -> orderItemEntity.setCount(orderItemEntity.getCount()-1));
 
-        Set<ConsumedOffsetEntity> consumedOffsetEntitySet = new HashSet<>();
         ConsumedOffsetEntity consumedOffsetEntity = new ConsumedOffsetEntity();
         consumedOffsetEntity.setKafkaOffset(offset);
         consumedOffsetEntity.setPartition(partition);
-        consumedOffsetEntitySet.add(consumedOffsetEntity);
-        setConsumedOffsets(consumedOffsetEntitySet);
+
+        Set<ConsumedOffsetEntity> collect = consumedOffsets
+            .stream()
+            .filter(consumedOffsetEntity1 -> !consumedOffsetEntity1.getPartition().equals(consumedOffsetEntity.getPartition()))
+            .collect(Collectors.toSet());
+
+        collect.add(consumedOffsetEntity);
     }
 
     public OrderEntity addItem(String orderId, String item, int partition, long offset) {
