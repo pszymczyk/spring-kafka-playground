@@ -24,7 +24,8 @@ import org.springframework.test.context.TestPropertySource;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
+
+import static org.awaitility.Awaitility.await;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext
@@ -64,26 +65,28 @@ public class ApplicationTests {
         addItemToOrder(orderTwo, iWatch);
 
         //order one should be saved in database
-        Awaitility.await().atMost(3, TimeUnit.SECONDS).untilAsserted(
+        await().atMost(3, TimeUnit.SECONDS).untilAsserted(
             () -> {
-                Optional<OrderEntity> orderTwoEntity = orderRepository.findByOrderId(orderOne);
-                assert orderTwoEntity.isPresent();
-                assert orderTwoEntity.get().getOrderId().equals(orderOne);
-                assert orderTwoEntity.get().getOrderItems().stream()
+                Optional<OrderEntity> orderOneEntity = orderRepository.findByOrderId(orderOne);
+                assert orderOneEntity.isPresent();
+                assert orderOneEntity.get().getOrderId().equals(orderOne);
+                assert orderOneEntity.get().getOrderItems().size() == 3;
+                assert orderOneEntity.get().getOrderItems().stream()
                     .anyMatch(orderItemEntity -> orderItemEntity.getName().equals(iPhone) && orderItemEntity.getCount().equals(2L));
-                assert orderTwoEntity.get().getOrderItems().stream()
+                assert orderOneEntity.get().getOrderItems().stream()
                     .anyMatch(orderItemEntity -> orderItemEntity.getName().equals(iWatch) && orderItemEntity.getCount().equals(4L));
-                assert orderTwoEntity.get().getOrderItems().stream()
+                assert orderOneEntity.get().getOrderItems().stream()
                     .anyMatch(orderItemEntity -> orderItemEntity.getName().equals(kindle) && orderItemEntity.getCount().equals(1L));
             }
         );
 
         //order two should be saved in database
-        Awaitility.await().atMost(3, TimeUnit.SECONDS).untilAsserted(
+        await().atMost(3, TimeUnit.SECONDS).untilAsserted(
             () -> {
                 Optional<OrderEntity> orderTwoEntity = orderRepository.findByOrderId(orderTwo);
                 assert orderTwoEntity.isPresent();
                 assert orderTwoEntity.get().getOrderId().equals(orderTwo);
+                assert orderTwoEntity.get().getOrderItems().size() == 3;
                 assert orderTwoEntity.get().getOrderItems().stream()
                     .anyMatch(orderItemEntity -> orderItemEntity.getName().equals(echo) && orderItemEntity.getCount().equals(2L));
                 assert orderTwoEntity.get().getOrderItems().stream()
@@ -93,7 +96,47 @@ public class ApplicationTests {
             }
         );
 
+        //remove some items from orders
+        removeItemFromOrder(orderOne, iPhone);
+        removeItemFromOrder(orderOne, iWatch);
+        removeItemFromOrder(orderOne, iWatch);
+        removeItemFromOrder(orderTwo, iWatch);
+        removeItemFromOrder(orderTwo, echo);
+
+        //order one should be saved in database
+        await().atMost(3, TimeUnit.SECONDS).untilAsserted(
+            () -> {
+                Optional<OrderEntity> orderOneEntity = orderRepository.findByOrderId(orderOne);
+                assert orderOneEntity.isPresent();
+                assert orderOneEntity.get().getOrderId().equals(orderOne);
+                assert orderOneEntity.get().getOrderItems().size() == 3;
+                assert orderOneEntity.get().getOrderItems().stream()
+                    .anyMatch(orderItemEntity -> orderItemEntity.getName().equals(iPhone) && orderItemEntity.getCount().equals(1L));
+                assert orderOneEntity.get().getOrderItems().stream()
+                    .anyMatch(orderItemEntity -> orderItemEntity.getName().equals(iWatch) && orderItemEntity.getCount().equals(2L));
+                assert orderOneEntity.get().getOrderItems().stream()
+                    .anyMatch(orderItemEntity -> orderItemEntity.getName().equals(kindle) && orderItemEntity.getCount().equals(1L));
+            }
+        );
+
+        //order two should be saved in database
+        await().atMost(3, TimeUnit.SECONDS).untilAsserted(
+            () -> {
+                Optional<OrderEntity> orderTwoEntity = orderRepository.findByOrderId(orderTwo);
+                assert orderTwoEntity.isPresent();
+                assert orderTwoEntity.get().getOrderId().equals(orderTwo);
+                assert orderTwoEntity.get().getOrderItems().size() == 3;
+                assert orderTwoEntity.get().getOrderItems().stream()
+                    .anyMatch(orderItemEntity -> orderItemEntity.getName().equals(echo) && orderItemEntity.getCount().equals(1L));
+                assert orderTwoEntity.get().getOrderItems().stream()
+                    .anyMatch(orderItemEntity -> orderItemEntity.getName().equals(iPhone) && orderItemEntity.getCount().equals(1L));
+                assert orderTwoEntity.get().getOrderItems().stream()
+                    .anyMatch(orderItemEntity -> orderItemEntity.getName().equals(iWatch) && orderItemEntity.getCount().equals(0L));
+            }
+        );
     }
+
+
 
     void addItemToOrder(String order, String item) {
         HttpHeaders headers = new HttpHeaders();
@@ -112,7 +155,25 @@ public class ApplicationTests {
         assert split[0].equals("order-commands");
         assert Integer.parseInt(split[1]) == 0;
         assert Long.parseLong(split[2]) >= 0;
+    }
 
+    private void removeItemFromOrder(String order, String item) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        // language=JSON
+        String requestJsonPayload = "{\n" +
+            "  \"item\":" +
+            " \"" + item + "\",\n" +
+            "  \"orderId\": \"" + order + "\",\n" +
+            "  \"type\": \"RemoveItem\"\n" +
+            "}";
+        HttpEntity<?> postOrderCommandRequestEntity = new HttpEntity<>(requestJsonPayload, headers);
+        ResponseEntity<String> exchange = testRestTemplate.exchange("/orders/commands", HttpMethod.POST, postOrderCommandRequestEntity, String.class);
+        assert exchange.getStatusCode().equals(HttpStatus.ACCEPTED);
+        String[] split = exchange.getBody().split("\\.");
+        assert split[0].equals("order-commands");
+        assert Integer.parseInt(split[1]) == 0;
+        assert Long.parseLong(split[2]) >= 0;
     }
 
 }

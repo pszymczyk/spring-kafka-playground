@@ -69,17 +69,11 @@ public class OrderEntity {
             setOrderItems(new HashSet<>());
         }
 
-        Optional<OrderItemEntity> orderItem = getOrderItems()
+        getOrderItems()
             .stream()
             .filter(orderItemEntity -> orderItemEntity.getName().equals(item))
-            .findAny();
-
-        Long count = orderItem.map(OrderItemEntity::getCount).orElse(0L);
-
-        if (count <= 0) {
-            throw new RuntimeException("Cannot remove item from order: " + orderId);
-        }
-        orderItem.ifPresent(orderItemEntity -> orderItemEntity.setCount(orderItemEntity.getCount()-1));
+            .findAny()
+            .ifPresent(orderItemEntity -> orderItemEntity.setCount(Math.max(0L, orderItemEntity.getCount()-1)));
 
         ConsumedOffsetEntity consumedOffsetEntity = new ConsumedOffsetEntity();
         consumedOffsetEntity.setKafkaOffset(offset);
