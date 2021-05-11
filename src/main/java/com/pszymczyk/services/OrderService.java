@@ -2,6 +2,7 @@ package com.pszymczyk.services;
 
 import com.pszymczyk.commands.OrderCommand;
 import com.pszymczyk.events.ItemAdded;
+import com.pszymczyk.events.ItemRemoved;
 import com.pszymczyk.repositiories.ConsumedOffsetEntity;
 import com.pszymczyk.repositiories.OrderEntity;
 import com.pszymczyk.repositiories.OrderRepository;
@@ -79,5 +80,10 @@ public class OrderService {
             orderEntity.removeItem(orderCommand.getItem(), partition, offset);
         }
 
+        orderRepository.save(orderEntity);
+
+        OutboxRecord outboxRecord = outboxRecordFactory.create(orderEntity.getOrderId(),
+            new ItemRemoved(orderCommand.getOrderId(), orderCommand.getItem()));
+        outboxRepository.save(outboxRecord);
     }
 }
