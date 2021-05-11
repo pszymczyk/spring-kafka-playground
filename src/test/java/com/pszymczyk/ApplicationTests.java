@@ -2,6 +2,8 @@ package com.pszymczyk;
 
 import com.pszymczyk.repositiories.OrderEntity;
 import com.pszymczyk.repositiories.OrderItemEntity;
+import com.pszymczyk.repositiories.OutboxRecordEntity;
+import com.pszymczyk.repositiories.OutboxRepository;
 import org.awaitility.Awaitility;
 import org.awaitility.core.ThrowingRunnable;
 import org.slf4j.Logger;
@@ -22,8 +24,11 @@ import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import static org.awaitility.Awaitility.await;
 
@@ -38,6 +43,9 @@ public class ApplicationTests {
 
     @Autowired
     OrderRepository orderRepository;
+
+    @Autowired
+    OutboxRepository outboxRepository;
 
     @Test
     public void acceptanceTest() {
@@ -96,10 +104,19 @@ public class ApplicationTests {
             }
         );
 
+        //all domain events should be present on outbox
+        await().atMost(3, TimeUnit.SECONDS).untilAsserted(
+            () -> {
+                List<OutboxRecordEntity> publishedEvents = StreamSupport.stream(outboxRepository.findAll().spliterator(), false).collect(Collectors.toList());
+                assert publishedEvents.size() == 11;
+            }
+        );
+
         //remove some items from orders
         removeItemFromOrder(orderOne, iPhone);
         removeItemFromOrder(orderOne, iWatch);
         removeItemFromOrder(orderOne, iWatch);
+
         removeItemFromOrder(orderTwo, iWatch);
         removeItemFromOrder(orderTwo, echo);
 
@@ -132,6 +149,14 @@ public class ApplicationTests {
                     .anyMatch(orderItemEntity -> orderItemEntity.getName().equals(iPhone) && orderItemEntity.getCount().equals(1L));
                 assert orderTwoEntity.get().getOrderItems().stream()
                     .anyMatch(orderItemEntity -> orderItemEntity.getName().equals(iWatch) && orderItemEntity.getCount().equals(0L));
+            }
+        );
+
+        //all domain events should be present on outbox
+        await().atMost(3, TimeUnit.SECONDS).untilAsserted(
+            () -> {
+                List<OutboxRecordEntity> publishedEvents = StreamSupport.stream(outboxRepository.findAll().spliterator(), false).collect(Collectors.toList());
+                assert publishedEvents.size() == 16;
             }
         );
     }
