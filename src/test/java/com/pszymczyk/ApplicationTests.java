@@ -1,15 +1,9 @@
 package com.pszymczyk;
 
 import com.pszymczyk.repositiories.OrderEntity;
-import com.pszymczyk.repositiories.OrderItemEntity;
+import com.pszymczyk.repositiories.OrderRepository;
 import com.pszymczyk.repositiories.OutboxRecordEntity;
 import com.pszymczyk.repositiories.OutboxRepository;
-import org.awaitility.Awaitility;
-import org.awaitility.core.ThrowingRunnable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.pszymczyk.repositiories.OrderRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
