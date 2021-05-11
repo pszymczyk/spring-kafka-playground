@@ -18,11 +18,11 @@ import java.util.concurrent.TimeoutException;
 @RestController
 public class OrdersController {
 
-	private final KafkaTemplate<String, OrderCommand> template;
+	private final KafkaTemplate<String, OrderCommand> kafkaTemplate;
 	private final OrderCommandsTopic orderCommandsTopic;
 
-	public OrdersController(KafkaTemplate<String, OrderCommand> template, OrderCommandsTopic orderCommandsTopic) {
-		this.template = template;
+	public OrdersController(KafkaTemplate<String, OrderCommand> kafkaTemplate, OrderCommandsTopic orderCommandsTopic) {
+		this.kafkaTemplate = kafkaTemplate;
 		this.orderCommandsTopic = orderCommandsTopic;
 	}
 
@@ -33,7 +33,7 @@ public class OrdersController {
 		}
 
 		try {
-			SendResult<String, OrderCommand> sendResult = template
+			SendResult<String, OrderCommand> sendResult = kafkaTemplate
 				.send(orderCommandsTopic.getName(), orderCommand.getOrderId(), orderCommand)
 				.get(5, TimeUnit.SECONDS);
 

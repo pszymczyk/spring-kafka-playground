@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Naive implementation, on production use KafkaConnect
  */
 @Service
-public class OutboxRecordsPublisher {
+public class NativeOutboxRecordsPublisher {
 
     public static final long LAST_PUBLISHED_OUTBOX_RECORD_PLACEHOLDER = 999L;
 
@@ -24,10 +24,10 @@ public class OutboxRecordsPublisher {
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final OrdersTopic ordersTopic;
 
-    public OutboxRecordsPublisher(OutboxRepository outboxRepository,
-                                  LastPublishedOutboxRecordEntityRepository lastPublishedOutboxRecordEntityRepository,
-                                  KafkaTemplate<String, String> kafkaTemplate,
-                                  OrdersTopic ordersTopic) {
+    public NativeOutboxRecordsPublisher(OutboxRepository outboxRepository,
+                                        LastPublishedOutboxRecordEntityRepository lastPublishedOutboxRecordEntityRepository,
+                                        KafkaTemplate<String, String> kafkaTemplate,
+                                        OrdersTopic ordersTopic) {
         this.outboxRepository = outboxRepository;
         this.lastPublishedOutboxRecordEntityRepository = lastPublishedOutboxRecordEntityRepository;
         this.kafkaTemplate = kafkaTemplate;
