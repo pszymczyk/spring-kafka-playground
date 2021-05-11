@@ -1,6 +1,5 @@
 package com.pszymczyk.repositiories;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -12,7 +11,6 @@ public class OrderItemEntity {
     @GeneratedValue
     private Long entityId;
 
-    @Column(unique = true)
     private String name;
 
     private Long count;
@@ -40,4 +38,6 @@ public class OrderItemEntity {
     public void setCount(Long count) {
         this.count = count;
     }
+
+
 }

@@ -1,7 +1,7 @@
 package com.pszymczyk.repositiories;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.util.Objects;
 
@@ -9,10 +9,20 @@ import java.util.Objects;
 public class ConsumedOffsetEntity {
 
     @Id
-    @Column(unique = true)
+    @GeneratedValue
+    private Long entityId;
+
     private Integer partition;
 
     private Long kafkaOffset;
+
+    public Long getEntityId() {
+        return entityId;
+    }
+
+    public void setEntityId(Long entityId) {
+        this.entityId = entityId;
+    }
 
     public Integer getPartition() {
         return partition;
@@ -30,20 +40,4 @@ public class ConsumedOffsetEntity {
         this.kafkaOffset = offset;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ConsumedOffsetEntity that = (ConsumedOffsetEntity) o;
-        return Objects.equals(partition, that.partition) && Objects.equals(kafkaOffset, that.kafkaOffset);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(partition, kafkaOffset);
-    }
 }

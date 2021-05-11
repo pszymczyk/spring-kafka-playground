@@ -59,8 +59,8 @@ public class OrderEntity {
             .collect(Collectors.toSet());
 
         collect.add(consumedOffsetEntity);
-
-        setConsumedOffsets(collect);
+        consumedOffsets.clear();
+        consumedOffsets.addAll(collect);
         return this;
     }
 
@@ -91,6 +91,8 @@ public class OrderEntity {
             .collect(Collectors.toSet());
 
         collect.add(consumedOffsetEntity);
+        consumedOffsets.clear();
+        consumedOffsets.addAll(collect);
     }
 
     public OrderEntity addItem(String orderId, String item, int partition, long offset) {

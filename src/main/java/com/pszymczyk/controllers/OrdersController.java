@@ -16,18 +16,18 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 @RestController
-public class Controller {
+public class OrdersController {
 
 	private final KafkaTemplate<String, OrderCommand> template;
 	private final OrderCommandsTopic orderCommandsTopic;
 
-	public Controller(KafkaTemplate<String, OrderCommand> template, OrderCommandsTopic orderCommandsTopic) {
+	public OrdersController(KafkaTemplate<String, OrderCommand> template, OrderCommandsTopic orderCommandsTopic) {
 		this.template = template;
 		this.orderCommandsTopic = orderCommandsTopic;
 	}
 
 	@PostMapping(path = "/orders/commands")
-	public ResponseEntity<CommandId> sendFoo(@RequestBody OrderCommand orderCommand) {
+	public ResponseEntity<String> sendFoo(@RequestBody OrderCommand orderCommand) {
 		if (!OrderCommand.SUPPORTED_COMMANDS.contains(orderCommand.getType())) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
@@ -45,11 +45,11 @@ public class Controller {
 		}
 	}
 
-	private ResponseEntity<CommandId> getResponseEntity(RecordMetadata recordMetadata) {
+	private ResponseEntity<String> getResponseEntity(RecordMetadata recordMetadata) {
 		String topic = recordMetadata.topic();
 		int partition = recordMetadata.partition();
 		long offset = recordMetadata.offset();
-		return new ResponseEntity<>(new CommandId(topic, partition, offset), HttpStatus.ACCEPTED);
+		return new ResponseEntity<>(String.format("%s.%d.%d", topic, partition, offset), HttpStatus.ACCEPTED);
 	}
 
 }
