@@ -4,6 +4,7 @@ import com.pszymczyk.commands.OrderCommand;
 import com.pszymczyk.topics.OrderCommandsTopic;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
@@ -26,7 +27,7 @@ public class OrdersController {
 		this.orderCommandsTopic = orderCommandsTopic;
 	}
 
-	@PostMapping(path = "/orders/commands")
+	@PostMapping(path = "/orders/commands", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> sendFoo(@RequestBody OrderCommand orderCommand) {
 		if (!OrderCommand.SUPPORTED_COMMANDS.contains(orderCommand.getType())) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
