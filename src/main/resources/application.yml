@@ -1,12 +1,15 @@
 spring:
   kafka:
+    listener:
+      ack-mode: record
     consumer:
       enable-auto-commit: false
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            trusted.packages: com.pszymczyk.commands
+            value.default.type: com.pszymczyk.commands.OrderCommand
+      group-id: spring-kafka-playground-v1
     producer:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-
-playground:
-  kafka:
-    topics:
-      orderCommands: order-commands
-      orders: orders

@@ -1,7 +1,6 @@
 package com.pszymczyk.controllers;
 
 import com.pszymczyk.commands.OrderCommand;
-import com.pszymczyk.topics.OrderCommandsTopic;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,11 +19,9 @@ import java.util.concurrent.TimeoutException;
 public class OrdersController {
 
 	private final KafkaTemplate<String, OrderCommand> kafkaTemplate;
-	private final OrderCommandsTopic orderCommandsTopic;
 
-	public OrdersController(KafkaTemplate<String, OrderCommand> kafkaTemplate, OrderCommandsTopic orderCommandsTopic) {
+	public OrdersController(KafkaTemplate<String, OrderCommand> kafkaTemplate) {
 		this.kafkaTemplate = kafkaTemplate;
-		this.orderCommandsTopic = orderCommandsTopic;
 	}
 
 	@PostMapping(path = "/orders/commands", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -35,7 +32,7 @@ public class OrdersController {
 
 		try {
 			SendResult<String, OrderCommand> sendResult = kafkaTemplate
-				.send(orderCommandsTopic.getName(), orderCommand.getOrderId(), orderCommand)
+				.send("order-commands", orderCommand.getOrderId(), orderCommand)
 				.get(5, TimeUnit.SECONDS);
 
 			return getResponseEntity(sendResult.getRecordMetadata());
