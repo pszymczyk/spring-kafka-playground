@@ -30,17 +30,7 @@ public class OrdersController {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 
-		try {
-			SendResult<String, OrderCommand> sendResult = kafkaTemplate
-				.send("order-commands", orderCommand.getOrderId(), orderCommand)
-				.get(5, TimeUnit.SECONDS);
-
-			return getResponseEntity(sendResult.getRecordMetadata());
-		} catch (InterruptedException | ExecutionException e) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		} catch (TimeoutException e) {
-			return new ResponseEntity<>(HttpStatus.REQUEST_TIMEOUT);
-		}
+		throw new RuntimeException("TODO");
 	}
 
 	private ResponseEntity<String> getResponseEntity(RecordMetadata recordMetadata) {
