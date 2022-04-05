@@ -21,17 +21,17 @@ public class OrderCommandsListener {
 
     @KafkaListener(topics = "order-commands")
     public void listenOnOrderCommands(
-        @Payload OrderCommand orderCommand,
-        @Header(KafkaHeaders.OFFSET) long offset) {
+            @Payload OrderCommand orderCommand,
+            @Header(KafkaHeaders.OFFSET) long offset) {
         orderService.handle(orderCommand, offset);
         failSometimes();
     }
 
     private static void failSometimes() {
+        System.err.println("BOOOM!!!!");
         Random rand = new Random();
         int randomNum = rand.nextInt((4 - 1) + 1) + 1;
         if (randomNum == 2) {
-            System.err.println("BOOOM!!!!");
             throw new RuntimeException();
         }
     }

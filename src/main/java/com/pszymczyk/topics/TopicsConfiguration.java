@@ -10,4 +10,9 @@ public class TopicsConfiguration {
     NewTopic orderCommands() {
         return new NewTopic("order-commands", 1, (short) 1);
     }
+
+    @Bean
+    NewTopic orderCommandsDLT() {
+        return new NewTopic("order-commands.DLT", 1, (short) 1);
+    }
 }
