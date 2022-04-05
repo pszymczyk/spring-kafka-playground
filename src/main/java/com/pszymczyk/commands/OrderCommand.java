@@ -34,4 +34,13 @@ public class OrderCommand {
     public String getType() {
         return type;
     }
+
+    @Override
+    public String toString() {
+        return "OrderCommand{" +
+                "orderId='" + orderId + '\'' +
+                ", item='" + item + '\'' +
+                ", type='" + type + '\'' +
+                '}';
+    }
 }
