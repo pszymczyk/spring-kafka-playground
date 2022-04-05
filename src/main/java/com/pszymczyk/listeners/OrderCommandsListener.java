@@ -32,7 +32,7 @@ public class OrderCommandsListener {
         int randomNum = rand.nextInt((4 - 1) + 1) + 1;
         if (randomNum == 2) {
             System.err.println("BOOOM!!!!");
-            System.exit(0);
+            throw new RuntimeException();
         }
     }
 }
