@@ -26,6 +26,9 @@ public class OrderEntity {
     @JoinColumn(name = "ORDER_ID")
     private Set<OrderItemEntity> orderItems;
 
+    @Column
+    private Long lastAppliedOffset;
+
     public OrderEntity() {
     }
 
@@ -98,5 +101,13 @@ public class OrderEntity {
 
     public void setOrderItems(Set<OrderItemEntity> orderItems) {
         this.orderItems = orderItems;
+    }
+
+    public Long getLastAppliedOffset() {
+        return lastAppliedOffset;
+    }
+
+    public void setLastAppliedOffset(Long lastAppliedOffset) {
+        this.lastAppliedOffset = lastAppliedOffset;
     }
 }

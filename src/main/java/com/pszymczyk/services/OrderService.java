@@ -20,8 +20,12 @@ public class OrderService {
     }
 
     @Transactional
-    public void handle(OrderCommand orderCommand) {
+    public void handle(OrderCommand orderCommand, long offset) {
         OrderEntity orderEntity = getOrderEntity(orderCommand);
+
+        if (orderEntity.getLastAppliedOffset() != null && orderEntity.getLastAppliedOffset() >= offset) {
+            logger.info("Skipping duplicate message with offset " + offset);
+        }
 
         switch (orderCommand.getType()) {
             case "AddItem" -> orderEntity.addItem(orderCommand.getItem());
@@ -29,6 +33,7 @@ public class OrderService {
             default -> throw new RuntimeException("Unknown command type " + orderCommand.getType());
         }
 
+        orderEntity.setLastAppliedOffset(offset);
         orderRepository.save(orderEntity);
     }
 
