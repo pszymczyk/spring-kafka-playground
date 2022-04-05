@@ -26,6 +26,13 @@ public class OrderEntity {
     @JoinColumn(name = "ORDER_ID")
     private Set<OrderItemEntity> orderItems;
 
+    public OrderEntity() {
+    }
+
+    public OrderEntity(String orderId) {
+        this.orderId = orderId;
+    }
+
     public OrderEntity addItem(String item) {
         if (getOrderItems() == null) {
             setOrderItems(new HashSet<>());

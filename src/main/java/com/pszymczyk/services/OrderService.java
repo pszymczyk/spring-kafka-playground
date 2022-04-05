@@ -1,6 +1,7 @@
 package com.pszymczyk.services;
 
 import com.pszymczyk.commands.OrderCommand;
+import com.pszymczyk.repositiories.OrderEntity;
 import com.pszymczyk.repositiories.OrderRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,10 +21,18 @@ public class OrderService {
 
     @Transactional
     public void handle(OrderCommand orderCommand) {
+        OrderEntity orderEntity = getOrderEntity(orderCommand);
+
         switch (orderCommand.getType()) {
-            case "AddItem" -> logger.info("AddItem {}", orderCommand);
-            case "RemoveItem" -> logger.info("RemoveItem {}", orderCommand);
+            case "AddItem" -> orderEntity.addItem(orderCommand.getItem());
+            case "RemoveItem" -> orderEntity.removeItem(orderCommand.getItem());
             default -> throw new RuntimeException("Unknown command type " + orderCommand.getType());
         }
+
+        orderRepository.save(orderEntity);
+    }
+
+    private OrderEntity getOrderEntity(OrderCommand orderCommand) {
+        return orderRepository.findByOrderId(orderCommand.getOrderId()).orElse(new OrderEntity(orderCommand.getOrderId()));
     }
 }
