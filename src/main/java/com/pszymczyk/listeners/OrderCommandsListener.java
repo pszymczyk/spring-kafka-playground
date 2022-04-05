@@ -14,4 +14,10 @@ public class OrderCommandsListener {
     public OrderCommandsListener(OrderService orderService) {
         this.orderService = orderService;
     }
+
+    @KafkaListener(topics = "order-commands")
+    public void listenOnOrderCommands(
+        @Payload OrderCommand orderCommand) {
+        orderService.handle(orderCommand);
+    }
 }
