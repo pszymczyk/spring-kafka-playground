@@ -25,6 +25,7 @@ public class OrderService {
 
         if (orderEntity.getLastAppliedOffset() != null && orderEntity.getLastAppliedOffset() >= offset) {
             logger.info("Skipping duplicate message with offset " + offset);
+            return;
         }
 
         switch (orderCommand.getType()) {
