@@ -15,7 +15,7 @@ public class OutboxRecordsPublisherScheduler {
         this.naiveOutboxRecordsPublisher = naiveOutboxRecordsPublisher;
     }
 
-    @Scheduled(fixedDelay = 500)
+//    @Scheduled(fixedDelay = 500)
     public void scheduleFixedDelayTask() {
         naiveOutboxRecordsPublisher.sendBatch();
     }

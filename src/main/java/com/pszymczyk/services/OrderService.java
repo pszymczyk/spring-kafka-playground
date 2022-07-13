@@ -39,10 +39,6 @@ public class OrderService {
 
         orderEntity.setLastAppliedOffset(offset);
         orderRepository.save(orderEntity);
-
-        OutboxRecordEntity outboxRecordEntity = outboxRecordFactory.create(orderEntity.getOrderId(),
-                new ItemAdded(orderCommand.getOrderId(), orderCommand.getItem()));
-        outboxRepository.save(outboxRecordEntity);
     }
 
     private OrderEntity getOrderEntity(OrderCommand orderCommand) {
