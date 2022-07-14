@@ -1,9 +1,9 @@
 spring:
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
   datasource:
-    url: 'jdbc:h2:file:./h2-db/db;DB_CLOSE_ON_EXIT=FALSE;IFEXISTS=TRUE;DB_CLOSE_DELAY=-1;'
+    url: 'jdbc:h2:file:./h2-db/db'
   kafka:
     listener:
       ack-mode: record
@@ -13,9 +13,8 @@ spring:
       properties:
         spring:
           json:
-            trusted.packages: com.pszymczyk.commands
             value.default.type: com.pszymczyk.commands.OrderCommand
-      group-id: spring-kafka-playground-v1
+      group-id: spring-kafka-playground-v5
     producer:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       key-serializer: org.apache.kafka.common.serialization.StringSerializer

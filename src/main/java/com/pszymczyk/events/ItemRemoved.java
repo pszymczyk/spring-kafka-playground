@@ -2,7 +2,7 @@ package com.pszymczyk.events;
 
 public class ItemRemoved implements OrderEvent {
 
-    static final String TYPE = "ItemRemoved";
+    public static final String TYPE = "ItemRemoved";
 
     private final String orderId;
     private final String item;

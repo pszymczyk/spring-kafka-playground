@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,15 +25,11 @@ public class OrdersController {
 		this.kafkaTemplate = kafkaTemplate;
 	}
 
-	@PostMapping(path = "/orders/commands", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<String> sendFoo(@RequestBody OrderCommand orderCommand) {
-		if (!OrderCommand.SUPPORTED_COMMANDS.contains(orderCommand.getType())) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-
+	@PostMapping(path = "/orders/{orderId}/commands", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<String> sendFoo(@PathVariable String orderId, @RequestBody OrderCommand orderCommand) {
 		try {
 			SendResult<String, OrderCommand> sendResult = kafkaTemplate
-				.send("order-commands", orderCommand.getOrderId(), orderCommand)
+				.send("order-commands", orderId, orderCommand)
 				.get(5, TimeUnit.SECONDS);
 
 			return getResponseEntity(sendResult.getRecordMetadata());
