@@ -9,15 +9,12 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.*;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
-import org.springframework.kafka.transaction.KafkaTransactionManager;
 
-import javax.sql.DataSource;
 import java.util.Map;
 
 @EnableKafka
@@ -29,7 +26,6 @@ class KafkaConfiguration {
     KafkaConfiguration(KafkaProperties kafkaProperties) {
         this.kafkaProperties = kafkaProperties;
     }
-
 
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, OrderCommand> myKafkaContainerFactory() {
@@ -54,10 +50,7 @@ class KafkaConfiguration {
                 JsonDeserializer.VALUE_DEFAULT_TYPE, OrderCommand.class));
     }
 
-//    @Bean
-//    public DataSourceTransactionManager dstm(DataSource dataSource) {
-//        return new DataSourceTransactionManager(dataSource);
-//    }
+
     @Bean
     public KafkaTemplate<String, OrderEvent> orderEventKafkaTemplate() {
         return new KafkaTemplate<>(orderEventProducerFactory());
