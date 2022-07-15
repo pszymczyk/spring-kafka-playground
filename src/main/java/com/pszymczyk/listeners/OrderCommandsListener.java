@@ -9,42 +9,43 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
-import java.util.Collection;
 import java.util.Random;
 
+@KafkaListener(topics = "order-commands", containerFactory = "myKafkaContainerFactory")
 @Component
 //TODO move to configuration
-@KafkaListener(topics = "order-commands")
-@Transactional
 public class OrderCommandsListener {
 
     private final Logger logger = LoggerFactory.getLogger(OrderCommandsListener.class);
 
     private final OrderService orderService;
+    private final KafkaTemplate<String, OrderEvent> kafkaTemplate;
 
-    public OrderCommandsListener(OrderService orderService) {
+    public OrderCommandsListener(OrderService orderService, KafkaTemplate<String, OrderEvent> kafkaTemplate) {
         this.orderService = orderService;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     @KafkaHandler
-    //TODO move application configuration
-    @SendTo("orders")
-    public OrderEvent listenOnOrderCommands(
+    @Transactional
+    public void listenOnOrderCommands(
             @Payload AddItem addItem,
             @Header(KafkaHeaders.OFFSET) long offset) {
-        return orderService.handle(addItem, offset);
+        OrderEvent orderEvent = orderService.handle(addItem, offset);
+        kafkaTemplate.send("orders", orderEvent);
 //        failSometimes();
     }
 
     @KafkaHandler
-    //TODO move application configuration
+    @Transactional
     @SendTo("orders")
     public OrderEvent listenOnOrderCommands(
             @Payload RemoveItem removeItem,

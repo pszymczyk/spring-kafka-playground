@@ -9,31 +9,38 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.*;
-import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
+import org.springframework.kafka.transaction.KafkaTransactionManager;
 
+import javax.sql.DataSource;
 import java.util.Map;
 
+@EnableKafka
 @Configuration
 class KafkaConfiguration {
 
+    private final KafkaProperties kafkaProperties;
+
+    KafkaConfiguration(KafkaProperties kafkaProperties) {
+        this.kafkaProperties = kafkaProperties;
+    }
+
+
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, OrderCommand> kafkaListenerContainerFactory(
-            ConsumerFactory<String, OrderCommand> consumerFactory,
-            KafkaTemplate<String, OrderEvent> kafkaTemplate) {
+    public ConcurrentKafkaListenerContainerFactory<String, OrderCommand> myKafkaContainerFactory() {
 
         ConcurrentKafkaListenerContainerFactory<String, OrderCommand> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(consumerFactory);
-        factory.setReplyTemplate(kafkaTemplate);
-        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
+        factory.setConsumerFactory(consumerFactory());
         return factory;
     }
 
     @Bean
-    ConsumerFactory<String, OrderCommand> consumerFactory(KafkaProperties kafkaProperties) {
+    ConsumerFactory<String, OrderCommand> consumerFactory() {
         return new DefaultKafkaConsumerFactory<>(Map.of(
                 ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers(),
                 ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false,
@@ -41,50 +48,43 @@ class KafkaConfiguration {
                 ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class,
                 ConsumerConfig.GROUP_ID_CONFIG, kafkaProperties.getConsumer().getGroupId(),
                 ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest",
+                ConsumerConfig.ISOLATION_LEVEL_CONFIG, "read_committed",
                 JsonDeserializer.TRUSTED_PACKAGES, "com.pszymczyk.commands",
                 JsonDeserializer.USE_TYPE_INFO_HEADERS, false,
                 JsonDeserializer.VALUE_DEFAULT_TYPE, OrderCommand.class));
     }
 
+//    @Bean
+//    public DataSourceTransactionManager dstm(DataSource dataSource) {
+//        return new DataSourceTransactionManager(dataSource);
+//    }
     @Bean
-    public ProducerFactory<String, OrderEvent> orderEventProducerFactory(KafkaProperties kafkaProperties) {
+    public KafkaTemplate<String, OrderEvent> orderEventKafkaTemplate() {
+        return new KafkaTemplate<>(orderEventProducerFactory());
+    }
+
+    @Bean
+    public ProducerFactory<String, OrderEvent> orderEventProducerFactory() {
 
         Map<String, Object> configProps = Map.of(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers(),
                 ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class,
                 ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
-        return new DefaultKafkaProducerFactory<>(configProps);
+        final DefaultKafkaProducerFactory<String, OrderEvent> stringOrderEventDefaultKafkaProducerFactory = new DefaultKafkaProducerFactory<>(configProps);
+        stringOrderEventDefaultKafkaProducerFactory.setTransactionIdPrefix("tx-");
+        return stringOrderEventDefaultKafkaProducerFactory;
     }
-
-    @Bean
-    public KafkaTemplate<String, OrderEvent> orderEventKafkaTemplate(ProducerFactory<String, OrderEvent> producerFactory) {
-        return new KafkaTemplate<>(producerFactory);
-    }
-
-    @Bean
-    public ProducerFactory<String, OrderCommand> orderCommandProducerFactory(KafkaProperties kafkaProperties) {
-
-        Map<String, Object> configProps = Map.of(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers(),
-                ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class,
-                ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
-        return new DefaultKafkaProducerFactory<>(configProps);
-    }
-
-    @Bean
-    public KafkaTemplate<String, OrderCommand> orderCommandKafkaTemplate(ProducerFactory<String, OrderCommand> producerFactory) {
-        return new KafkaTemplate<>(producerFactory);
-    }
-
-    @Bean
-    public ProducerFactory<String, String> stringProducerFactory(KafkaProperties kafkaProperties) {
-
-        Map<String, Object> configProps = Map.of(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers(),
-                ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class,
-                ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
-        return new DefaultKafkaProducerFactory<>(configProps);
-    }
-
-    @Bean
-    public KafkaTemplate<String, String> stringKafkaTemplate(ProducerFactory<String, String> producerFactory) {
-        return new KafkaTemplate<>(producerFactory);
-    }
+//
+//    @Bean
+//    public ProducerFactory<String, OrderCommand> orderCommandProducerFactory(KafkaProperties kafkaProperties) {
+//
+//        Map<String, Object> configProps = Map.of(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers(),
+//                ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class,
+//                ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+//        return new DefaultKafkaProducerFactory<>(configProps);
+//    }
+//
+//    @Bean
+//    public KafkaTemplate<String, OrderCommand> orderCommandKafkaTemplate(ProducerFactory<String, OrderCommand> producerFactory) {
+//        return new KafkaTemplate<>(producerFactory);
+//    }
 }

@@ -3,7 +3,7 @@ spring:
     hibernate:
       ddl-auto: create
   datasource:
-    url: 'jdbc:h2:file:./h2-db/db'
+    url: 'jdbc:h2:mem:test_mem'
   kafka:
     listener:
       ack-mode: record
@@ -14,10 +14,7 @@ spring:
         spring:
           json:
             value.default.type: com.pszymczyk.commands.OrderCommand
-      group-id: spring-kafka-playground-v5
-    producer:
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      group-id: spring-kafka-playground-v8
     bootstrap-servers: localhost:9092
   h2:
     console:
