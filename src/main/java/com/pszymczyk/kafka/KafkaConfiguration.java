@@ -6,6 +6,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,16 +16,20 @@ import org.springframework.kafka.core.*;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
+import java.util.List;
 import java.util.Map;
 
 @EnableKafka
 @Configuration
-class KafkaConfiguration {
+public class KafkaConfiguration {
 
-    private final KafkaProperties kafkaProperties;
+    private final List<String> bootstrapServers;
+    private final String groupId;
 
-    KafkaConfiguration(KafkaProperties kafkaProperties) {
-        this.kafkaProperties = kafkaProperties;
+    public KafkaConfiguration(@Value("${spring.kafka.bootstrap-servers}") List<String> bootstrapServers,
+                       @Value("${spring.kafka.consumer.group-id}") String groupId) {
+        this.bootstrapServers = bootstrapServers;
+        this.groupId = groupId;
     }
 
     @Bean
@@ -38,11 +43,11 @@ class KafkaConfiguration {
     @Bean
     ConsumerFactory<String, OrderCommand> consumerFactory() {
         return new DefaultKafkaConsumerFactory<>(Map.of(
-                ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers(),
+                ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers,
                 ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false,
                 ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class,
                 ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class,
-                ConsumerConfig.GROUP_ID_CONFIG, kafkaProperties.getConsumer().getGroupId(),
+                ConsumerConfig.GROUP_ID_CONFIG, groupId,
                 ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest",
                 ConsumerConfig.ISOLATION_LEVEL_CONFIG, "read_committed",
                 JsonDeserializer.TRUSTED_PACKAGES, "com.pszymczyk.commands",
@@ -59,7 +64,7 @@ class KafkaConfiguration {
     @Bean
     public ProducerFactory<String, OrderEvent> orderEventProducerFactory() {
 
-        Map<String, Object> configProps = Map.of(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers(),
+        Map<String, Object> configProps = Map.of(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers,
                 ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class,
                 ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         final DefaultKafkaProducerFactory<String, OrderEvent> stringOrderEventDefaultKafkaProducerFactory = new DefaultKafkaProducerFactory<>(configProps);

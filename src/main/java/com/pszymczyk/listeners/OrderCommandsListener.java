@@ -13,7 +13,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,18 +38,16 @@ public class OrderCommandsListener {
     public void listenOnOrderCommands(
             @Payload AddItem addItem,
             @Header(KafkaHeaders.OFFSET) long offset) {
-        OrderEvent orderEvent = orderService.handle(addItem, offset);
-        kafkaTemplate.send("orders", orderEvent);
+        orderService.handle(addItem, offset).forEach(event -> kafkaTemplate.send("orders", event));
 //        failSometimes();
     }
 
     @KafkaHandler
     @Transactional
-    @SendTo("orders")
-    public OrderEvent listenOnOrderCommands(
+    public void listenOnOrderCommands(
             @Payload RemoveItem removeItem,
             @Header(KafkaHeaders.OFFSET) long offset) {
-        return orderService.handle(removeItem, offset);
+        orderService.handle(removeItem, offset).forEach(event -> kafkaTemplate.send("orders", event));
 //        failSometimes();
     }
 
