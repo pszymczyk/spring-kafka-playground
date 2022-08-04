@@ -1,4 +1,4 @@
-package com.pszymczyk.events;
+package com.pszymczyk.application.events;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

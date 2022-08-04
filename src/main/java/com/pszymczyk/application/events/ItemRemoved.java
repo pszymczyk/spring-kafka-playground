@@ -1,18 +1,19 @@
-package com.pszymczyk.events;
+package com.pszymczyk.application.events;
 
-public class ItemAdded implements OrderEvent {
+public class ItemRemoved implements OrderEvent {
 
-    public static final String TYPE = "ItemAdded";
+    public static final String TYPE = "ItemRemoved";
 
     private final String orderId;
     private final String item;
 
-    public ItemAdded(String orderId, String item) {
+    public ItemRemoved(
+        String orderId,
+        String item) {
         this.orderId = orderId;
         this.item = item;
     }
 
-    @Override
     public String getItem() {
         return item;
     }

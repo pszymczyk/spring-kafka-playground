@@ -1,4 +1,4 @@
-package com.pszymczyk.repositiories;
+package com.pszymczyk.application.repositiories;
 
 import javax.persistence.*;
 import java.util.HashSet;

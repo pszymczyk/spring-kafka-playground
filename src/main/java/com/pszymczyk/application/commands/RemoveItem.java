@@ -1,17 +1,17 @@
-package com.pszymczyk.commands;
+package com.pszymczyk.application.commands;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class AddItem implements OrderCommand {
+public class RemoveItem implements OrderCommand {
 
-    public static final String TYPE = "AddItem";
+    public static final String TYPE = "RemoveItem";
 
     private final String orderId;
     private final String item;
 
     @JsonCreator
-    public AddItem(
+    public RemoveItem(
         @JsonProperty("orderId") String orderId,
         @JsonProperty("item") String item) {
         this.orderId = orderId;

@@ -1,4 +1,4 @@
-package com.pszymczyk.topics;
+package com.pszymczyk.application.topics;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.context.annotation.Bean;

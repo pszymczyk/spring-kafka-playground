@@ -1,4 +1,4 @@
-package com.pszymczyk.commands;
+package com.pszymczyk.application.commands;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

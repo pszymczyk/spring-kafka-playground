@@ -1,10 +1,10 @@
-package com.pszymczyk.listeners;
+package com.pszymczyk.application.listeners;
 
-import com.pszymczyk.commands.AddItem;
-import com.pszymczyk.commands.RemoveItem;
-import com.pszymczyk.commands.UnknownCommand;
-import com.pszymczyk.events.OrderEvent;
-import com.pszymczyk.services.OrderService;
+import com.pszymczyk.application.commands.AddItem;
+import com.pszymczyk.application.commands.RemoveItem;
+import com.pszymczyk.application.commands.UnknownCommand;
+import com.pszymczyk.application.events.OrderEvent;
+import com.pszymczyk.application.services.OrderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaHandler;
