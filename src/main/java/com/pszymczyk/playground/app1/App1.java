@@ -7,6 +7,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.core.RoutingKafkaTemplate;
@@ -49,11 +50,17 @@ public class App1 {
 
     @Bean
     public NewTopic messages() {
-        return new NewTopic("app1-messages", 1, (short) 1);
+        return TopicBuilder.name("app1-messages")
+                .partitions(1)
+                .replicas(1)
+                .build();
     }
 
     @Bean
     public NewTopic defaultTopic() {
-        return new NewTopic("app1-default", 1, (short) 1);
+        return TopicBuilder.name("app1-default")
+                .partitions(1)
+                .replicas(1)
+                .build();
     }
 }
