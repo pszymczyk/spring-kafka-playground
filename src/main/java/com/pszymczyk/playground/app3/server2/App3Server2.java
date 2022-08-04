@@ -1,6 +1,5 @@
-package com.pszymczyk.playground.app2.server;
+package com.pszymczyk.playground.app3.server2;
 
-import com.pszymczyk.application.services.OrderService;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,25 +14,24 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Component;
 
 @SpringBootApplication
-public class App2Server {
+public class App3Server2 {
 
-    private final Logger logger = LoggerFactory.getLogger(App2Server.class);
+    private final Logger logger = LoggerFactory.getLogger(App3Server2.class);
 
     public static void main(String[] args) {
-        SpringApplication.run(App2Server.class, args);
+        SpringApplication.run(App3Server2.class, args);
     }
 
-    @KafkaListener(id = "app2-server", topics = "app2-requests")
+    @KafkaListener(id = "app3-server-2", topics = "app3-requests")
     @SendTo
     public String listen(String in) {
         logger.info("Server received {}", in);
-        return "PONG";
+        return "PONG from server 2";
     }
-
 
     @Bean
     public NewTopic app2Requests() {
-        return TopicBuilder.name("app2-requests")
+        return TopicBuilder.name("app3-requests")
                 .partitions(1)
                 .replicas(1)
                 .build();
@@ -41,7 +39,7 @@ public class App2Server {
 
     @Bean
     public NewTopic app2Replies() {
-        return TopicBuilder.name("app2-replies")
+        return TopicBuilder.name("app3-replies")
                 .partitions(1)
                 .replicas(1)
                 .build();
@@ -52,7 +50,7 @@ public class App2Server {
 
         @Override
         public void customize(ConfigurableWebServerFactory factory) {
-            factory.setPort(8081);
+            factory.setPort(8082);
         }
     }
 }

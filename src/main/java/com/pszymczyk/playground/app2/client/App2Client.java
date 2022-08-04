@@ -69,29 +69,4 @@ public class App2Client {
         repliesContainer.setAutoStartup(false);
         return repliesContainer;
     }
-
-    @Bean
-    public NewTopic app2Requests() {
-        return TopicBuilder.name("app2-requests")
-                .partitions(1)
-                .replicas(1)
-                .build();
-    }
-
-    @Bean
-    public NewTopic app2Replies() {
-        return TopicBuilder.name("app2-replies")
-                .partitions(1)
-                .replicas(1)
-                .build();
-    }
-
-    @Component
-    public class ServerPortCustomizer implements WebServerFactoryCustomizer<ConfigurableWebServerFactory> {
-
-        @Override
-        public void customize(ConfigurableWebServerFactory factory) {
-            factory.setPort(8081);
-        }
-    }
 }
