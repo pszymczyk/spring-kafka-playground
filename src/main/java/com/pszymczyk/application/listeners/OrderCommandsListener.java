@@ -54,7 +54,7 @@ public class OrderCommandsListener {
     @KafkaHandler(isDefault = true)
     void listenDefault(@Payload UnknownCommand unknownCommand,
                        @Header(KafkaHeaders.OFFSET) long offset,
-                       @Header(KafkaHeaders.RECEIVED_PARTITION_ID) int partitionId,
+                       @Header(KafkaHeaders.RECEIVED_PARTITION) int partitionId,
                        @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
         logger.warn("Handling unknown event type {}. Offset {}, partition {}, topic {}",
                 unknownCommand.getType(),
