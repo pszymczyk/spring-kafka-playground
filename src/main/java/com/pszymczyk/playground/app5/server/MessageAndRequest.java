@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "type",
         visible = true,
-        defaultImpl = Unknown.class)
+        defaultImpl = Void.class)
 @JsonSubTypes({
         @JsonSubTypes.Type(value = Request.class, name = "request"),
         @JsonSubTypes.Type(value = Message.class, name = "message")

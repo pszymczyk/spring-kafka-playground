@@ -1,6 +1,5 @@
 package com.pszymczyk.playground.app2.server;
 
-import com.pszymczyk.application.services.OrderService;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

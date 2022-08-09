@@ -48,7 +48,7 @@ public class App5Server {
         }
 
         @KafkaHandler(isDefault = true)
-        void handleRequests(@Payload Unknown unknown,
+        void handleRequests(@Payload Object unknown,
                             @Header(KafkaHeaders.OFFSET) long offset,
                             @Header(KafkaHeaders.RECEIVED_PARTITION) int partitionId,
                             @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
