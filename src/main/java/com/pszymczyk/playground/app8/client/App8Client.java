@@ -1,36 +1,46 @@
 package com.pszymczyk.playground.app8.client;
 
+import com.pszymczyk.playground.app8.server.App8Server;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.SendResult;
-import org.springframework.util.concurrent.ListenableFuture;
 
-import java.util.concurrent.TimeUnit;
+import java.util.Properties;
 
 @SpringBootApplication
 public class App8Client {
 
     public static final String APP_8 = "app8";
-    private final Logger logger = LoggerFactory.getLogger(App8Client.class);
 
     public static void main(String[] args) {
-        SpringApplication.run(App8Client.class, args).close();
+        SpringApplication application = new SpringApplication(App8Client.class);
+        var properties = new Properties();
+        properties.put("spring.kafka.producer.batch-size", "1");
+        application.setDefaultProperties(properties);
+        application.run(args).close();
+
     }
 
     @Bean
     public ApplicationRunner runner(KafkaTemplate<String, String> template) {
         return args -> {
-            ProducerRecord<String, String> record = new ProducerRecord<>(APP_8, "PING");
-            ListenableFuture<SendResult<String, String>> replyFuture = template.send(record);
-            SendResult<String, String> sendResult = replyFuture.get(10, TimeUnit.SECONDS);
-
-            logger.info("Client sent ok, {}", sendResult.getProducerRecord().value());
+            template.send(new ProducerRecord<>(APP_8, null, "PING"));
+            template.send(new ProducerRecord<>(APP_8, null, "PING"));
+            template.send(new ProducerRecord<>(APP_8, null, "PING"));
+            template.send(new ProducerRecord<>(APP_8, null, "PING"));
+            template.send(new ProducerRecord<>(APP_8, "fas", "PING"));
+            template.send(new ProducerRecord<>(APP_8, "qwerfewq", "PING"));
+            template.send(new ProducerRecord<>(APP_8, "dsgsbdfs", "PING"));
+            template.send(new ProducerRecord<>(APP_8, "dfghdfd", "PING"));
+            template.send(new ProducerRecord<>(APP_8, "1234", "PING"));
+            template.send(new ProducerRecord<>(APP_8, "terw", "PING"));
+            template.send(new ProducerRecord<>(APP_8, "hfghfgee", "PING"));
+            template.send(new ProducerRecord<>(APP_8, "xcvcxcv", "PING"));
+            template.send(new ProducerRecord<>(APP_8, "fasfds", "PING"));
+            template.send(new ProducerRecord<>(APP_8, "fgsdgfd", "PING"));
         };
     }
 }
