@@ -1,4 +1,4 @@
-package com.pszymczyk.playground.app6.server;
+package com.pszymczyk.playground.app8.server;
 
 import com.pszymczyk.playground.common.Utils;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -10,44 +10,41 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.server.ConfigurableWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.kafka.annotation.DltHandler;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.annotation.RetryableTopic;
 import org.springframework.kafka.config.TopicBuilder;
-import org.springframework.retry.annotation.Backoff;
 import org.springframework.stereotype.Component;
 
-import static com.pszymczyk.playground.app6.client.App6Client.APP_6;
+import java.util.Properties;
+
+import static com.pszymczyk.playground.app8.client.App8Client.APP_8;
 
 @SpringBootApplication
-public class App6Server {
+public class App8Server {
 
-    private static final Logger logger = LoggerFactory.getLogger(App6Server.class);
+    private static final Logger logger = LoggerFactory.getLogger(App8Server.class);
 
     public static void main(String[] args) {
-        SpringApplication.run(App6Server.class, args);
+        SpringApplication application = new SpringApplication(App8Server.class);
+        var properties = new Properties();
+        properties.put("kafka.listener.concurrency", 10);
+        application.setDefaultProperties(properties);
+        application.run(args);
     }
 
     @Component
     public class MyKafkaHandler {
 
-        @RetryableTopic(attempts = "2", backoff = @Backoff(delay = 3000))
-        @KafkaListener(topics = APP_6, groupId = "app6")
+        @KafkaListener(topics = APP_8, groupId = "app8", containerFactory = "myKafkaContainerFactory")
         void handleMessages(ConsumerRecord<String, String> message) {
             logger.info("Handle, message. Record headers: ");
             message.headers().forEach(header -> logger.info("{}:{}", header.key(), new String(header.value())));
             Utils.failSometimes();
         }
-
-        @DltHandler
-        public void processMessage(String message) {
-            logger.info("Dlt received message {}", message);
-        }
     }
 
     @Bean
-    public NewTopic app6Messages() {
-        return TopicBuilder.name("app6")
+    public NewTopic newTopic() {
+        return TopicBuilder.name(APP_8)
                 .partitions(1)
                 .replicas(1)
                 .build();

@@ -1,6 +1,5 @@
 package com.pszymczyk.playground.app2.client;
 
-import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.slf4j.Logger;
@@ -8,18 +7,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.server.ConfigurableWebServerFactory;
-import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
-import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 import org.springframework.kafka.requestreply.RequestReplyFuture;
-import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.kafka.support.SendResult;
-import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
@@ -27,6 +21,8 @@ import java.util.concurrent.TimeUnit;
 @SpringBootApplication
 public class App2Client {
 
+    public static final String APP_2_REQUESTS = "app2-requests";
+    public static final String APP_2_REPLIES = "app2-replies";
     private final Logger logger = LoggerFactory.getLogger(App2Client.class);
 
     public static void main(String[] args) {
@@ -39,7 +35,7 @@ public class App2Client {
             if (!template.waitForAssignment(Duration.ofSeconds(10))) {
                 throw new IllegalStateException("Reply container did not initialize");
             }
-            ProducerRecord<String, String> record = new ProducerRecord<>("app2-requests", "PING");
+            ProducerRecord<String, String> record = new ProducerRecord<>(APP_2_REQUESTS, "PING");
             RequestReplyFuture<String, String, String> replyFuture = template.sendAndReceive(record, Duration.ofMinutes(5));
             SendResult<String, String> sendResult = replyFuture.getSendFuture().get(10, TimeUnit.SECONDS);
 
@@ -64,7 +60,7 @@ public class App2Client {
             ConcurrentKafkaListenerContainerFactory<String, String> containerFactory) {
 
         ConcurrentMessageListenerContainer<String, String> repliesContainer =
-                containerFactory.createContainer("app2-replies");
+                containerFactory.createContainer(APP_2_REPLIES);
         repliesContainer.getContainerProperties().setGroupId("repliesGroup");
         repliesContainer.setAutoStartup(false);
         return repliesContainer;

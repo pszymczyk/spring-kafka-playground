@@ -19,6 +19,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+import static com.pszymczyk.playground.app4.client.App4Client.APP_4_REQUESTS;
+
 @SpringBootApplication
 public class App4Server {
 
@@ -31,7 +33,7 @@ public class App4Server {
 
     @Bean
     KafkaMessageListenerContainer<String, String> app4KafkaMessageListenerContainer() {
-        ContainerProperties containerProps = new ContainerProperties("app4-requests");
+        ContainerProperties containerProps = new ContainerProperties(APP_4_REQUESTS);
         containerProps.setMessageListener((MessageListener<String, String>) in -> logger.info("Server received {}", in));
 
         DefaultKafkaConsumerFactory<String, String> cf = new DefaultKafkaConsumerFactory<>(
@@ -47,7 +49,7 @@ public class App4Server {
 
     @Bean
     public NewTopic app4Requests() {
-        return TopicBuilder.name("app4-requests")
+        return TopicBuilder.name(APP_4_REQUESTS)
                 .partitions(1)
                 .replicas(1)
                 .build();

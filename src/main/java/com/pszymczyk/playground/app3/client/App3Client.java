@@ -7,8 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.server.ConfigurableWebServerFactory;
-import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ProducerFactory;
@@ -17,17 +15,16 @@ import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.requestreply.AggregatingReplyingKafkaTemplate;
 import org.springframework.kafka.requestreply.RequestReplyFuture;
 import org.springframework.kafka.support.SendResult;
-import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiPredicate;
 
 @SpringBootApplication
 public class App3Client {
 
+    public static final String APP_3_REQUESTS = "app3-requests";
+    public static final String APP_3_REPLIES = "app3-replies";
     private final Logger logger = LoggerFactory.getLogger(App3Client.class);
 
     public static void main(String[] args) {
@@ -40,7 +37,7 @@ public class App3Client {
             if (!template.waitForAssignment(Duration.ofSeconds(10))) {
                 throw new IllegalStateException("Reply container did not initialize");
             }
-            ProducerRecord<String, String> record = new ProducerRecord<>("app3-requests", "PING");
+            ProducerRecord<String, String> record = new ProducerRecord<>(APP_3_REQUESTS, "PING");
             RequestReplyFuture<String, String, Collection<ConsumerRecord<String, String>>> replyFuture = template.sendAndReceive(record, Duration.ofMinutes(5));
             SendResult<String, String> sendResult = replyFuture.getSendFuture().get(10, TimeUnit.SECONDS);
 
@@ -66,7 +63,7 @@ public class App3Client {
             ConcurrentKafkaListenerContainerFactory<String, Collection<ConsumerRecord<String, String>>> containerFactory) {
 
         ConcurrentMessageListenerContainer<String, Collection<ConsumerRecord<String, String>>> repliesContainer =
-                containerFactory.createContainer("app3-replies");
+                containerFactory.createContainer(APP_3_REPLIES);
         repliesContainer.getContainerProperties().setGroupId("repliesGroup");
         repliesContainer.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
         repliesContainer.setAutoStartup(false);

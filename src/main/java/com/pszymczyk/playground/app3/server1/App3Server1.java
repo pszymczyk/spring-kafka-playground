@@ -13,6 +13,9 @@ import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Component;
 
+import static com.pszymczyk.playground.app3.client.App3Client.APP_3_REPLIES;
+import static com.pszymczyk.playground.app3.client.App3Client.APP_3_REQUESTS;
+
 @SpringBootApplication
 public class App3Server1 {
 
@@ -22,7 +25,7 @@ public class App3Server1 {
         SpringApplication.run(App3Server1.class, args);
     }
 
-    @KafkaListener(id = "app3-server-1", topics = "app3-requests")
+    @KafkaListener(id = "app3-server-1", topics = APP_3_REQUESTS)
     @SendTo
     public String listen(String in) {
         logger.info("Server received {}", in);
@@ -31,7 +34,7 @@ public class App3Server1 {
 
     @Bean
     public NewTopic app2Requests() {
-        return TopicBuilder.name("app3-requests")
+        return TopicBuilder.name(APP_3_REQUESTS)
                 .partitions(1)
                 .replicas(1)
                 .build();
@@ -39,7 +42,7 @@ public class App3Server1 {
 
     @Bean
     public NewTopic app2Replies() {
-        return TopicBuilder.name("app3-replies")
+        return TopicBuilder.name(APP_3_REPLIES)
                 .partitions(1)
                 .replicas(1)
                 .build();

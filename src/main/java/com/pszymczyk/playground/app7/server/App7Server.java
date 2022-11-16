@@ -1,4 +1,4 @@
-package com.pszymczyk.playground.app6.server;
+package com.pszymczyk.playground.app7.server;
 
 import com.pszymczyk.playground.common.Utils;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -10,44 +10,61 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.server.ConfigurableWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.kafka.annotation.DltHandler;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.annotation.RetryableTopic;
+import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.TopicBuilder;
-import org.springframework.retry.annotation.Backoff;
+import org.springframework.kafka.core.ConsumerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
+import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.util.backoff.FixedBackOff;
 
-import static com.pszymczyk.playground.app6.client.App6Client.APP_6;
+import static com.pszymczyk.playground.app7.client.App7Client.APP_7;
 
 @SpringBootApplication
-public class App6Server {
+public class App7Server {
 
-    private static final Logger logger = LoggerFactory.getLogger(App6Server.class);
+    private static final Logger logger = LoggerFactory.getLogger(App7Server.class);
 
     public static void main(String[] args) {
-        SpringApplication.run(App6Server.class, args);
+        SpringApplication.run(App7Server.class, args);
     }
 
     @Component
     public class MyKafkaHandler {
 
-        @RetryableTopic(attempts = "2", backoff = @Backoff(delay = 3000))
-        @KafkaListener(topics = APP_6, groupId = "app6")
+        @KafkaListener(topics = APP_7, groupId = "app7", containerFactory = "myKafkaContainerFactory")
         void handleMessages(ConsumerRecord<String, String> message) {
             logger.info("Handle, message. Record headers: ");
             message.headers().forEach(header -> logger.info("{}:{}", header.key(), new String(header.value())));
             Utils.failSometimes();
         }
 
-        @DltHandler
+        @KafkaListener(topics = APP_7+ ".DLT", groupId = "app7-dlt")
         public void processMessage(String message) {
             logger.info("Dlt received message {}", message);
         }
     }
 
     @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, String> myKafkaContainerFactory(
+            ConsumerFactory<String, String> consumerFactory,
+            KafkaTemplate<String, String> kafkaTemplate) {
+
+        DefaultErrorHandler errorHandler = new DefaultErrorHandler(
+                new DeadLetterPublishingRecoverer(kafkaTemplate),
+                new FixedBackOff(2000L, 2L));
+
+        ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory);
+        factory.setCommonErrorHandler(errorHandler);
+        return factory;
+    }
+
+    @Bean
     public NewTopic app6Messages() {
-        return TopicBuilder.name("app6")
+        return TopicBuilder.name(APP_7)
                 .partitions(1)
                 .replicas(1)
                 .build();

@@ -24,9 +24,12 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+import static com.pszymczyk.playground.app5.client.App5Client.APP_5_MESSAGES_AND_REQUESTS;
+
 @SpringBootApplication
 public class App5Server {
 
+    public static final String APP_5_DEFAULT = "app5-default";
     private final Logger logger = LoggerFactory.getLogger(App5Server.class);
 
     public static void main(String[] args) {
@@ -78,13 +81,12 @@ public class App5Server {
     }
 
     @Bean
-    public NewTopic app4Requests() {
-        return TopicBuilder.name("app5-messages-and-requests")
+    public NewTopic messages() {
+        return TopicBuilder.name(APP_5_MESSAGES_AND_REQUESTS)
                 .partitions(1)
                 .replicas(1)
                 .build();
     }
-
 
     @Component
     public class ServerPortCustomizer implements WebServerFactoryCustomizer<ConfigurableWebServerFactory> {

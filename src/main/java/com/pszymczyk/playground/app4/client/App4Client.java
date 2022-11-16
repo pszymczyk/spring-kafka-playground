@@ -16,6 +16,8 @@ import java.util.concurrent.TimeUnit;
 @SpringBootApplication
 public class App4Client {
 
+    public static final String APP_4_REQUESTS = "app4-requests";
+
     private final Logger logger = LoggerFactory.getLogger(App4Client.class);
 
     public static void main(String[] args) {
@@ -25,7 +27,7 @@ public class App4Client {
     @Bean
     public ApplicationRunner runner(KafkaTemplate<String, String> template) {
         return args -> {
-            ProducerRecord<String, String> record = new ProducerRecord<>("app4-requests", "PING");
+            ProducerRecord<String, String> record = new ProducerRecord<>(APP_4_REQUESTS, "PING");
             ListenableFuture<SendResult<String, String>> replyFuture = template.send(record);
             SendResult<String, String> sendResult = replyFuture.get(10, TimeUnit.SECONDS);
 
