@@ -1,6 +1,5 @@
-package com.pszymczyk.playground.app2.client;
+package com.pszymczyk.training.app8.client;
 
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,37 +12,32 @@ import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 import org.springframework.kafka.requestreply.RequestReplyFuture;
-import org.springframework.kafka.support.SendResult;
 
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 @SpringBootApplication
-public class App2Client {
+public class App8Client {
 
-    public static final String APP_2_REQUESTS = "app2-requests";
-    public static final String APP_2_REPLIES = "app2-replies";
-    private final Logger logger = LoggerFactory.getLogger(App2Client.class);
+    public static final String APP_8_REQUESTS = "app8-requests";
+    public static final String APP_8_REPLIES = "app8-replies";
+    private final Logger logger = LoggerFactory.getLogger(App8Client.class);
 
     public static void main(String[] args) {
-        SpringApplication.run(App2Client.class, args).close();
+        SpringApplication.run(App8Client.class, args).close();
     }
 
     @Bean
     public ApplicationRunner runner(ReplyingKafkaTemplate<String, String, String> template) {
+
         return args -> {
             if (!template.waitForAssignment(Duration.ofSeconds(10))) {
                 throw new IllegalStateException("Reply container did not initialize");
             }
-            ProducerRecord<String, String> record = new ProducerRecord<>(APP_2_REQUESTS, "PING");
+            ProducerRecord<String, String> record = new ProducerRecord<>(APP_8_REQUESTS, "PING");
             RequestReplyFuture<String, String, String> replyFuture = template.sendAndReceive(record, Duration.ofMinutes(5));
-            SendResult<String, String> sendResult = replyFuture.getSendFuture().get(10, TimeUnit.SECONDS);
-
-            logger.info("Client sent ok, {}", sendResult.getProducerRecord().value());
-
-            ConsumerRecord<String, String> consumerRecord = replyFuture.get(6, TimeUnit.MINUTES);
-
-            logger.info("Client got reply: {}", consumerRecord.value());
+            logger.info("Client received response with headers:");
+            replyFuture.get(6, TimeUnit.MINUTES).headers().forEach(h -> logger.info("Header, {}:{}", h.key(), h.value()));
         };
     }
 
@@ -60,7 +54,7 @@ public class App2Client {
             ConcurrentKafkaListenerContainerFactory<String, String> containerFactory) {
 
         ConcurrentMessageListenerContainer<String, String> repliesContainer =
-                containerFactory.createContainer(APP_2_REPLIES);
+                containerFactory.createContainer(APP_8_REPLIES);
         repliesContainer.getContainerProperties().setGroupId("repliesGroup");
         repliesContainer.setAutoStartup(false);
         return repliesContainer;
