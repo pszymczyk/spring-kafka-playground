@@ -1,4 +1,4 @@
-package com.pszymczyk.playground.app3.client;
+package com.pszymczyk.training.app9.client;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -14,21 +14,20 @@ import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.requestreply.AggregatingReplyingKafkaTemplate;
 import org.springframework.kafka.requestreply.RequestReplyFuture;
-import org.springframework.kafka.support.SendResult;
 
 import java.time.Duration;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
 @SpringBootApplication
-public class App3Client {
+public class App9Client {
 
-    public static final String APP_3_REQUESTS = "app3-requests";
-    public static final String APP_3_REPLIES = "app3-replies";
-    private final Logger logger = LoggerFactory.getLogger(App3Client.class);
+    public static final String APP_9_REQUESTS = "app9-requests";
+    public static final String APP_9_REPLIES = "app9-replies";
+    private final Logger logger = LoggerFactory.getLogger(App9Client.class);
 
     public static void main(String[] args) {
-        SpringApplication.run(App3Client.class, args).close();
+        SpringApplication.run(App9Client.class, args).close();
     }
 
     @Bean
@@ -37,16 +36,17 @@ public class App3Client {
             if (!template.waitForAssignment(Duration.ofSeconds(10))) {
                 throw new IllegalStateException("Reply container did not initialize");
             }
-            ProducerRecord<String, String> record = new ProducerRecord<>(APP_3_REQUESTS, "PING");
+            ProducerRecord<String, String> record = new ProducerRecord<>(APP_9_REQUESTS, "PING");
             RequestReplyFuture<String, String, Collection<ConsumerRecord<String, String>>> replyFuture = template.sendAndReceive(record, Duration.ofMinutes(5));
-            SendResult<String, String> sendResult = replyFuture.getSendFuture().get(10, TimeUnit.SECONDS);
-
-            logger.info("Client sent ok, {}", sendResult.getProducerRecord().value());
-
             ConsumerRecord<String, Collection<ConsumerRecord<String, String>>> replies = replyFuture.get(6, TimeUnit.MINUTES);
 
-            replies.value().forEach(reply -> logger.info("Client got reply: {}", reply.value()));
-
+            logger.info("Client received responses with headers:");
+            replies.value().forEach(
+                    cR -> {
+                        cR.headers().forEach(h -> {
+                            logger.info("Header, {}:{}", h.key(), h.value());
+                        });
+                    });
         };
     }
 
@@ -63,7 +63,7 @@ public class App3Client {
             ConcurrentKafkaListenerContainerFactory<String, Collection<ConsumerRecord<String, String>>> containerFactory) {
 
         ConcurrentMessageListenerContainer<String, Collection<ConsumerRecord<String, String>>> repliesContainer =
-                containerFactory.createContainer(APP_3_REPLIES);
+                containerFactory.createContainer(APP_9_REPLIES);
         repliesContainer.getContainerProperties().setGroupId("repliesGroup");
         repliesContainer.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
         repliesContainer.setAutoStartup(false);

@@ -1,6 +1,8 @@
-package com.pszymczyk.playground.app3.server2;
+package com.pszymczyk.training.app9.server1;
 
+import com.pszymczyk.training.app9.client.App9Client;
 import org.apache.kafka.clients.admin.NewTopic;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -13,36 +15,34 @@ import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Component;
 
-import static com.pszymczyk.playground.app3.client.App3Client.APP_3_REPLIES;
-import static com.pszymczyk.playground.app3.client.App3Client.APP_3_REQUESTS;
-
 @SpringBootApplication
-public class App3Server2 {
+public class App9Server1 {
 
-    private final Logger logger = LoggerFactory.getLogger(App3Server2.class);
+    private final Logger logger = LoggerFactory.getLogger(App9Server1.class);
 
     public static void main(String[] args) {
-        SpringApplication.run(App3Server2.class, args);
+        SpringApplication.run(App9Server1.class, args);
     }
 
-    @KafkaListener(id = "app3-server-2", topics = APP_3_REQUESTS)
+    @KafkaListener(id = "app9-server-1", topics = App9Client.APP_9_REQUESTS)
     @SendTo
-    public String listen(String in) {
-        logger.info("Server received {}", in);
-        return "PONG from server 2";
+    public String listen(ConsumerRecord<String, String> consumerRecord) {
+        logger.info("Server received request with headers:");
+        consumerRecord.headers().forEach(h -> logger.info("Server received message with headers {}:{}", h.key(), h.value()));
+        return "PONG from server 1";
     }
 
     @Bean
-    public NewTopic app2Requests() {
-        return TopicBuilder.name(APP_3_REQUESTS)
+    public NewTopic app9Requests() {
+        return TopicBuilder.name(App9Client.APP_9_REQUESTS)
                 .partitions(1)
                 .replicas(1)
                 .build();
     }
 
     @Bean
-    public NewTopic app2Replies() {
-        return TopicBuilder.name(APP_3_REPLIES)
+    public NewTopic app9Replies() {
+        return TopicBuilder.name(App9Client.APP_9_REPLIES)
                 .partitions(1)
                 .replicas(1)
                 .build();
@@ -53,7 +53,7 @@ public class App3Server2 {
 
         @Override
         public void customize(ConfigurableWebServerFactory factory) {
-            factory.setPort(8082);
+            factory.setPort(8081);
         }
     }
 }
