@@ -1,4 +1,4 @@
-package com.pszymczyk.playground.app8.client;
+package com.pszymczyk.training.app1.client;
 
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.boot.ApplicationRunner;
@@ -10,12 +10,12 @@ import org.springframework.kafka.core.KafkaTemplate;
 import java.util.Properties;
 
 @SpringBootApplication
-public class App8Client {
+public class App1Client {
 
-    public static final String APP_1 = "app8";
+    public static final String APP_1 = "app1";
 
     public static void main(String[] args) {
-        SpringApplication application = new SpringApplication(App8Client.class);
+        SpringApplication application = new SpringApplication(App1Client.class);
         var properties = new Properties();
         properties.put("spring.kafka.producer.batch-size", "1");
         application.setDefaultProperties(properties);

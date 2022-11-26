@@ -1,4 +1,4 @@
-package com.pszymczyk.playground.app8.server;
+package com.pszymczyk.training.app1.server;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -20,12 +20,12 @@ import java.util.Properties;
 import static com.pszymczyk.playground.app8.client.App8Client.APP_1;
 
 @SpringBootApplication
-public class App8Server {
+public class App1Server {
 
-    private static final Logger logger = LoggerFactory.getLogger(App8Server.class);
+    private static final Logger logger = LoggerFactory.getLogger(App1Server.class);
 
     public static void main(String[] args) {
-        SpringApplication application = new SpringApplication(App8Server.class);
+        SpringApplication application = new SpringApplication(App1Server.class);
         var properties = new Properties();
         properties.put("kafka.listener.concurrency", 8);
         application.setDefaultProperties(properties);
@@ -35,7 +35,7 @@ public class App8Server {
     @Component
     public class MyKafkaHandler {
 
-        @KafkaListener(topics = APP_1, groupId = "app8")
+        @KafkaListener(topics = APP_1, groupId = APP_1)
         void handleMessages(ConsumerRecord<String, String> message,
                             @Header(KafkaHeaders.RECEIVED_PARTITION) int partition) {
             logger.info("Handle, message. Record k: {}, partition: {}", message.key(), partition);
