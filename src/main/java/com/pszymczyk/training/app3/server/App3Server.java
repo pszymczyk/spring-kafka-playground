@@ -1,4 +1,4 @@
-package com.pszymczyk.playground.app7.server;
+package com.pszymczyk.training.app3.server;
 
 import com.pszymczyk.playground.common.Utils;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -20,28 +20,28 @@ import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.util.backoff.FixedBackOff;
 
-import static com.pszymczyk.playground.app7.client.App7Client.APP_7;
+import static com.pszymczyk.training.app3.client.App3Client.APP_3;
 
 @SpringBootApplication
-public class App7Server {
+public class App3Server {
 
-    private static final Logger logger = LoggerFactory.getLogger(App7Server.class);
+    private static final Logger logger = LoggerFactory.getLogger(App3Server.class);
 
     public static void main(String[] args) {
-        SpringApplication.run(App7Server.class, args);
+        SpringApplication.run(App3Server.class, args);
     }
 
     @Component
     public class MyKafkaHandler {
 
-        @KafkaListener(topics = APP_7, groupId = "app7", containerFactory = "myKafkaContainerFactory")
+        @KafkaListener(topics = APP_3, groupId = APP_3, containerFactory = "myKafkaContainerFactory")
         void handleMessages(ConsumerRecord<String, String> message) {
             logger.info("Handle, message. Record headers: ");
             message.headers().forEach(header -> logger.info("{}:{}", header.key(), new String(header.value())));
             Utils.failSometimes();
         }
 
-        @KafkaListener(topics = APP_7+ ".DLT", groupId = "app7-dlt")
+        @KafkaListener(topics = APP_3 + ".DLT", groupId = APP_3 + ".DLT")
         public void processMessage(String message) {
             logger.info("Dlt received message {}", message);
         }
@@ -64,7 +64,7 @@ public class App7Server {
 
     @Bean
     public NewTopic app6Messages() {
-        return TopicBuilder.name(APP_7)
+        return TopicBuilder.name(APP_3)
                 .partitions(1)
                 .replicas(1)
                 .build();
