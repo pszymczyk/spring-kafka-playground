@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Properties;
 
-import static com.pszymczyk.playground.app8.client.App8Client.APP_1;
+import static com.pszymczyk.training.app1.client.App1Client.APP_1;
 
 @SpringBootApplication
 public class App1Server {

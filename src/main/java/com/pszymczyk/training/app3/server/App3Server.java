@@ -1,6 +1,6 @@
 package com.pszymczyk.training.app3.server;
 
-import com.pszymczyk.playground.common.Utils;
+import com.pszymczyk.training.common.Utils;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
