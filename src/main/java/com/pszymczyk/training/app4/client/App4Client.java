@@ -1,4 +1,4 @@
-package com.pszymczyk.playground.app6.client;
+package com.pszymczyk.training.app4.client;
 
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.slf4j.Logger;
@@ -14,19 +14,19 @@ import org.springframework.util.concurrent.ListenableFuture;
 import java.util.concurrent.TimeUnit;
 
 @SpringBootApplication
-public class App6Client {
+public class App4Client {
 
-    public static final String APP_6 = "app6";
-    private final Logger logger = LoggerFactory.getLogger(App6Client.class);
+    public static final String APP_4 = "app4";
+    private final Logger logger = LoggerFactory.getLogger(App4Client.class);
 
     public static void main(String[] args) {
-        SpringApplication.run(App6Client.class, args).close();
+        SpringApplication.run(App4Client.class, args).close();
     }
 
     @Bean
     public ApplicationRunner runner(KafkaTemplate<String, String> template) {
         return args -> {
-            ProducerRecord<String, String> record = new ProducerRecord<>(APP_6, "PING");
+            ProducerRecord<String, String> record = new ProducerRecord<>(APP_4, "PING");
             ListenableFuture<SendResult<String, String>> replyFuture = template.send(record);
             SendResult<String, String> sendResult = replyFuture.get(10, TimeUnit.SECONDS);
 

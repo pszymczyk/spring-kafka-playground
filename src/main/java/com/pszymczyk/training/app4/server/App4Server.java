@@ -1,4 +1,4 @@
-package com.pszymczyk.playground.app6.server;
+package com.pszymczyk.training.app4.server;
 
 import com.pszymczyk.playground.common.Utils;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -17,22 +17,22 @@ import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.stereotype.Component;
 
-import static com.pszymczyk.playground.app6.client.App6Client.APP_6;
+import static com.pszymczyk.training.app4.client.App4Client.APP_4;
 
 @SpringBootApplication
-public class App6Server {
+public class App4Server {
 
-    private static final Logger logger = LoggerFactory.getLogger(App6Server.class);
+    private static final Logger logger = LoggerFactory.getLogger(App4Server.class);
 
     public static void main(String[] args) {
-        SpringApplication.run(App6Server.class, args);
+        SpringApplication.run(App4Server.class, args);
     }
 
     @Component
     public class MyKafkaHandler {
 
         @RetryableTopic(attempts = "2", backoff = @Backoff(delay = 3000))
-        @KafkaListener(topics = APP_6, groupId = "app6")
+        @KafkaListener(topics = APP_4, groupId = APP_4)
         void handleMessages(ConsumerRecord<String, String> message) {
             logger.info("Handle, message. Record headers: ");
             message.headers().forEach(header -> logger.info("{}:{}", header.key(), new String(header.value())));
@@ -46,8 +46,8 @@ public class App6Server {
     }
 
     @Bean
-    public NewTopic app6Messages() {
-        return TopicBuilder.name("app6")
+    public NewTopic app4Messages() {
+        return TopicBuilder.name(APP_4)
                 .partitions(1)
                 .replicas(1)
                 .build();
