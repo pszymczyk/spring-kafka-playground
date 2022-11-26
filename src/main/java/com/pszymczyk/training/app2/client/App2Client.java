@@ -1,7 +1,7 @@
-package com.pszymczyk.playground.app5.client;
+package com.pszymczyk.training.app2.client;
 
-import com.pszymczyk.playground.app5.server.Message;
-import com.pszymczyk.playground.app5.server.Request;
+import com.pszymczyk.training.app2.server.Message;
+import com.pszymczyk.training.app2.server.Request;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
@@ -19,13 +19,13 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 @SpringBootApplication
-public class App5Client {
+public class App2Client {
 
 
-    public static final String APP_5_MESSAGES_AND_REQUESTS = "app5-messages-and-requests";
+    public static final String APP_2_MESSAGES_AND_REQUESTS = "app2-messages-and-requests";
 
     public static void main(String[] args) {
-        SpringApplication.run(App5Client.class, args).close();
+        SpringApplication.run(App2Client.class, args).close();
     }
 
     @Bean
@@ -38,7 +38,7 @@ public class App5Client {
         context.registerBean(DefaultKafkaProducerFactory.class, "jsonProducerFactory", jsonPF);
 
         Map<Pattern, ProducerFactory<Object, Object>> map = new LinkedHashMap<>();
-        map.put(Pattern.compile(APP_5_MESSAGES_AND_REQUESTS), jsonPF);
+        map.put(Pattern.compile(APP_2_MESSAGES_AND_REQUESTS), jsonPF);
         map.put(Pattern.compile(".+"), pf);
         return new RoutingKafkaTemplate(map);
     }
@@ -46,9 +46,9 @@ public class App5Client {
     @Bean
     public ApplicationRunner runner(RoutingKafkaTemplate routingKafkaTemplate) {
         return args -> {
-            routingKafkaTemplate.send(APP_5_MESSAGES_AND_REQUESTS, new Message("sender", "receiver", "Hello world!"));
-            routingKafkaTemplate.send(APP_5_MESSAGES_AND_REQUESTS, new Request("sender", "receiver"));
-            routingKafkaTemplate.send(APP_5_MESSAGES_AND_REQUESTS, Map.of("type", "something-not-supported"));
+            routingKafkaTemplate.send(APP_2_MESSAGES_AND_REQUESTS, new Message("sender", "receiver", "Hello world!"));
+            routingKafkaTemplate.send(APP_2_MESSAGES_AND_REQUESTS, new Request("sender", "receiver"));
+            routingKafkaTemplate.send(APP_2_MESSAGES_AND_REQUESTS, Map.of("type", "something-not-supported"));
         };
     }
 }

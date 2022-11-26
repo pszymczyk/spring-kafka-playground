@@ -1,5 +1,6 @@
-package com.pszymczyk.playground.app5.server;
+package com.pszymczyk.training.app2.server;
 
+import com.pszymczyk.training.app2.client.App2Client;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -24,20 +25,17 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
-import static com.pszymczyk.playground.app5.client.App5Client.APP_5_MESSAGES_AND_REQUESTS;
-
 @SpringBootApplication
-public class App5Server {
+public class App2Server {
 
-    public static final String APP_5_DEFAULT = "app5-default";
-    private final Logger logger = LoggerFactory.getLogger(App5Server.class);
+    private final Logger logger = LoggerFactory.getLogger(App2Server.class);
 
     public static void main(String[] args) {
-        SpringApplication.run(App5Server.class, args);
+        SpringApplication.run(App2Server.class, args);
     }
 
     @Component
-    @KafkaListener(topics = "app5-messages-and-requests", containerFactory = "myKafkaContainerFactory")
+    @KafkaListener(topics = "app2-messages-and-requests", containerFactory = "myKafkaContainerFactory")
     public class MyKafkaHandler {
 
         @KafkaHandler
@@ -74,15 +72,15 @@ public class App5Server {
                 ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false,
                 ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class,
                 ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class,
-                ConsumerConfig.GROUP_ID_CONFIG, "app5",
-                JsonDeserializer.TRUSTED_PACKAGES, "com.pszymczyk.playground.app5",
+                ConsumerConfig.GROUP_ID_CONFIG, "app2",
+                JsonDeserializer.TRUSTED_PACKAGES, "com.pszymczyk.training.app2",
                 JsonDeserializer.USE_TYPE_INFO_HEADERS, false,
                 JsonDeserializer.VALUE_DEFAULT_TYPE, MessageAndRequest.class));
     }
 
     @Bean
     public NewTopic messages() {
-        return TopicBuilder.name(APP_5_MESSAGES_AND_REQUESTS)
+        return TopicBuilder.name(App2Client.APP_2_MESSAGES_AND_REQUESTS)
                 .partitions(1)
                 .replicas(1)
                 .build();

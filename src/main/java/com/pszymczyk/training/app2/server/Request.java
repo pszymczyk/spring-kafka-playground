@@ -1,4 +1,4 @@
-package com.pszymczyk.playground.app5.server;
+package com.pszymczyk.training.app2.server;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
