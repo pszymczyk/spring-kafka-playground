@@ -27,7 +27,7 @@ public class App1Server {
     public static void main(String[] args) {
         SpringApplication application = new SpringApplication(App1Server.class);
         var properties = new Properties();
-        properties.put("kafka.listener.concurrency", 8);
+        properties.put("spring.kafka.listener.concurrency", 5);
         application.setDefaultProperties(properties);
         application.run(args);
     }
