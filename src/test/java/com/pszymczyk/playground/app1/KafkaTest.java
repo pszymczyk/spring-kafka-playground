@@ -26,7 +26,6 @@ abstract class KafkaTest {
 
     @BeforeAll
     void beforeAll() {
-        var producerFactory = new ProducerFactory<>()
         kafkaTemplate = new KafkaTemplate<>(null);
     }
 }
