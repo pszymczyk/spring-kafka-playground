@@ -1,6 +1,6 @@
-package com.pszymczyk.training.app9.server1;
+package com.pszymczyk.training.app8.server2;
 
-import com.pszymczyk.training.app9.client.App9Client;
+import com.pszymczyk.training.app8.client.App8Client;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
@@ -16,25 +16,25 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Component;
 
 @SpringBootApplication
-public class App9Server1 {
+public class App8Server2 {
 
-    private final Logger logger = LoggerFactory.getLogger(App9Server1.class);
+    private final Logger logger = LoggerFactory.getLogger(App8Server2.class);
 
     public static void main(String[] args) {
-        SpringApplication.run(App9Server1.class, args);
+        SpringApplication.run(App8Server2.class, args);
     }
 
-    @KafkaListener(id = "app9-server-1", topics = App9Client.APP_9_REQUESTS)
+    @KafkaListener(id = "app8-server-2", topics = App8Client.APP_8_REQUESTS)
     @SendTo
     public String listen(ConsumerRecord<String, String> consumerRecord) {
         logger.info("Server received request with headers:");
         consumerRecord.headers().forEach(h -> logger.info("Server received message with headers {}:{}", h.key(), h.value()));
-        return "PONG from server 1";
+        return "PONG from server 2";
     }
 
     @Bean
     public NewTopic app9Requests() {
-        return TopicBuilder.name(App9Client.APP_9_REQUESTS)
+        return TopicBuilder.name(App8Client.APP_8_REQUESTS)
                 .partitions(1)
                 .replicas(1)
                 .build();
@@ -42,7 +42,7 @@ public class App9Server1 {
 
     @Bean
     public NewTopic app9Replies() {
-        return TopicBuilder.name(App9Client.APP_9_REPLIES)
+        return TopicBuilder.name(App8Client.APP_8_REPLIES)
                 .partitions(1)
                 .replicas(1)
                 .build();
@@ -53,7 +53,7 @@ public class App9Server1 {
 
         @Override
         public void customize(ConfigurableWebServerFactory factory) {
-            factory.setPort(8081);
+            factory.setPort(8082);
         }
     }
 }

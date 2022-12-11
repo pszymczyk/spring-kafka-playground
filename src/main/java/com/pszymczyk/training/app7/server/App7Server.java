@@ -1,6 +1,6 @@
-package com.pszymczyk.training.app8.server;
+package com.pszymczyk.training.app7.server;
 
-import com.pszymczyk.training.app8.client.App8Client;
+import com.pszymczyk.training.app7.client.App7Client;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
@@ -16,15 +16,15 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Component;
 
 @SpringBootApplication
-public class App8Server {
+public class App7Server {
 
-    private final Logger logger = LoggerFactory.getLogger(App8Server.class);
+    private final Logger logger = LoggerFactory.getLogger(App7Server.class);
 
     public static void main(String[] args) {
-        SpringApplication.run(App8Server.class, args);
+        SpringApplication.run(App7Server.class, args);
     }
 
-    @KafkaListener(id = "app8-server", topics = App8Client.APP_8_REQUESTS)
+    @KafkaListener(id = "app8-server", topics = App7Client.APP_7_REQUESTS)
     @SendTo
     public String listen(ConsumerRecord<String, String> consumerRecord) {
         logger.info("Server received request with headers:");
@@ -35,7 +35,7 @@ public class App8Server {
 
     @Bean
     public NewTopic app2Requests() {
-        return TopicBuilder.name(App8Client.APP_8_REQUESTS)
+        return TopicBuilder.name(App7Client.APP_7_REQUESTS)
                 .partitions(1)
                 .replicas(1)
                 .build();
@@ -43,7 +43,7 @@ public class App8Server {
 
     @Bean
     public NewTopic app2Replies() {
-        return TopicBuilder.name(App8Client.APP_8_REPLIES)
+        return TopicBuilder.name(App7Client.APP_7_REPLIES)
                 .partitions(1)
                 .replicas(1)
                 .build();
