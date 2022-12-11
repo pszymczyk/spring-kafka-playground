@@ -2,9 +2,9 @@ package com.pszymczyk.training.app6;
 
 import java.util.Set;
 
-public interface DebtorsRepository {
+public class DebtorsRepository {
 
-    default Set<String> getDebtors() {
+    public Set<String> getDebtors() {
         return Set.of(
             "jan k.",
             "wincenty f.",
@@ -15,7 +15,7 @@ public interface DebtorsRepository {
         );
     }
 
-    default Set<String> getBlackList() {
+    public Set<String> getBlackList() {
         return Set.of(
             "andrzej k.",
             "jacek b.",

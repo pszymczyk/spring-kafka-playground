@@ -6,8 +6,6 @@ import com.pszymczyk.training.app6.LoanApplicationRequest;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -22,6 +20,7 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Properties;
 
 import static com.pszymczyk.training.app6.client.App6Client.APP_6_INPUT;
@@ -29,8 +28,6 @@ import static com.pszymczyk.training.app6.client.App6Client.APP_6_OUTPUT;
 
 @SpringBootApplication
 public class App6Server {
-
-    private static final Logger logger = LoggerFactory.getLogger(App6Server.class);
 
     public static void main(String[] args) {
         SpringApplication application = new SpringApplication(App6Server.class);
@@ -49,7 +46,9 @@ public class App6Server {
     }
 
     @Component
-    public class MyKafkaHandler implements DebtorsRepository{
+    public class MyKafkaHandler {
+
+        private static final DebtorsRepository debtorsRepository = new DebtorsRepository();
 
         private final KafkaTemplate<String, LoanApplicationDecision> template;
 
@@ -61,10 +60,22 @@ public class App6Server {
         @KafkaListener(topics = APP_6_INPUT, groupId = APP_6_INPUT)
         @Transactional
         void handleMessages(LoanApplicationRequest loanApplicationRequest) {
-            final LoanApplicationDecision loanApplicationDecision = new LoanApplicationDecision();
-            loanApplicationDecision.setAmount(loanApplicationDecision.getAmount());
-            loanApplicationDecision.setRequester(loanApplicationRequest.getRequester());
-            template.send(APP_6_OUTPUT, loanApplicationDecision);
+            if (debtorsRepository.getDebtors().contains(loanApplicationRequest.getRequester())) {
+                LoanApplicationDecision loanApplicationDecision = new LoanApplicationDecision();
+                loanApplicationDecision.setAmount(loanApplicationRequest.getAmount().multiply(new BigDecimal("0.5")));
+                loanApplicationDecision.setRequester(loanApplicationRequest.getRequester());
+                template.send(APP_6_OUTPUT, loanApplicationDecision);
+            } else if (debtorsRepository.getBlackList().contains(loanApplicationRequest.getRequester())) {
+                LoanApplicationDecision loanApplicationDecision = new LoanApplicationDecision();
+                loanApplicationDecision.setAmount(BigDecimal.ZERO);
+                loanApplicationDecision.setRequester(loanApplicationRequest.getRequester());
+                template.send(APP_6_OUTPUT, loanApplicationDecision);
+            } else {
+                LoanApplicationDecision loanApplicationDecision = new LoanApplicationDecision();
+                loanApplicationDecision.setAmount(loanApplicationRequest.getAmount());
+                loanApplicationDecision.setRequester(loanApplicationRequest.getRequester());
+                template.send(APP_6_OUTPUT, loanApplicationDecision);
+            }
         }
     }
 
