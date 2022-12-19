@@ -3,6 +3,7 @@ package com.pszymczyk.training.app3_1.server;
 import com.pszymczyk.training.app1.server.App1Server;
 import com.pszymczyk.training.common.Utils;
 import org.apache.kafka.clients.admin.NewTopic;
+import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +45,9 @@ public class App3_1Server {
 
         @KafkaListener(topics = APP_3_1, groupId = APP_3_1, containerFactory = "myKafkaContainerFactory")
         void handleMessages(ConsumerRecord<String, String> message) {
-            logger.info("Handle, message. Offset: {}, Record headers: ", message.offset());
+            logger.info("Handle, message by consumer thread {}. Offset: {}, Record headers: ",
+                    Thread.currentThread().getName(),
+                    message.offset());
             message.headers().forEach(header -> logger.info("{}:{}", header.key(), new String(header.value())));
             Utils.failSometimes();
         }
