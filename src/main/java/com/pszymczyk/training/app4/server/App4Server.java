@@ -14,6 +14,9 @@ import org.springframework.kafka.annotation.DltHandler;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.annotation.RetryableTopic;
 import org.springframework.kafka.config.TopicBuilder;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.retrytopic.RetryTopicConfiguration;
+import org.springframework.kafka.retrytopic.RetryTopicConfigurationBuilder;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.stereotype.Component;
 
@@ -31,7 +34,6 @@ public class App4Server {
     @Component
     public class MyKafkaHandler {
 
-        @RetryableTopic(attempts = "2", backoff = @Backoff(delay = 3000))
         @KafkaListener(topics = APP_4, groupId = APP_4)
         void handleMessages(ConsumerRecord<String, String> message) {
             logger.info("Handle, message. Record headers: ");
@@ -51,6 +53,15 @@ public class App4Server {
                 .partitions(1)
                 .replicas(1)
                 .build();
+    }
+
+    @Bean
+    public RetryTopicConfiguration myOtherRetryTopic(KafkaTemplate<String, String> template) {
+        return RetryTopicConfigurationBuilder
+                .newInstance()
+                .exponentialBackoff(1000, 2, 10_000)
+                .maxAttempts(4)
+                .create(template);
     }
 
     @Component
