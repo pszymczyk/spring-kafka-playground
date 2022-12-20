@@ -70,7 +70,7 @@ public class App3_1Server {
         ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory);
         factory.setCommonErrorHandler(errorHandler);
-        factory.setConcurrency(3);
+        factory.setConcurrency(2);
         return factory;
     }
 
