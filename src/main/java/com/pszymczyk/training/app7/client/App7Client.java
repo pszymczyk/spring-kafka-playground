@@ -14,6 +14,7 @@ import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 import org.springframework.kafka.requestreply.RequestReplyFuture;
 
 import java.time.Duration;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @SpringBootApplication
@@ -55,7 +56,7 @@ public class App7Client {
 
         ConcurrentMessageListenerContainer<String, String> repliesContainer =
                 containerFactory.createContainer(APP_7_REPLIES);
-        repliesContainer.getContainerProperties().setGroupId("repliesGroup");
+        repliesContainer.getContainerProperties().setGroupId(UUID.randomUUID().toString());
         repliesContainer.setAutoStartup(false);
         return repliesContainer;
     }

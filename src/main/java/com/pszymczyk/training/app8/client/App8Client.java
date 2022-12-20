@@ -11,12 +11,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
-import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.requestreply.AggregatingReplyingKafkaTemplate;
 import org.springframework.kafka.requestreply.RequestReplyFuture;
 
 import java.time.Duration;
 import java.util.Collection;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @SpringBootApplication
@@ -64,8 +64,7 @@ public class App8Client {
 
         ConcurrentMessageListenerContainer<String, Collection<ConsumerRecord<String, String>>> repliesContainer =
                 containerFactory.createContainer(APP_8_REPLIES);
-        repliesContainer.getContainerProperties().setGroupId("repliesGroup");
-        repliesContainer.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
+        repliesContainer.getContainerProperties().setGroupId(UUID.randomUUID().toString());
         repliesContainer.setAutoStartup(false);
         return repliesContainer;
     }
