@@ -47,7 +47,7 @@ public class App2Client {
     public ApplicationRunner runner(RoutingKafkaTemplate routingKafkaTemplate) {
         return args -> {
             routingKafkaTemplate.send(APP_2_MESSAGES_AND_REQUESTS, new Message("sender", "receiver", "Hello world!"));
-            routingKafkaTemplate.send(APP_2_MESSAGES_AND_REQUESTS, new Request("sender", "receiver"));
+            routingKafkaTemplate.send(APP_2_MESSAGES_AND_REQUESTS, new Request("id", "some funny request"));
             routingKafkaTemplate.send(APP_2_MESSAGES_AND_REQUESTS, Map.of("type", "something-not-supported"));
         };
     }

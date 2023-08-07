@@ -58,24 +58,23 @@ public class App2Server {
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, MessageAndRequest> myKafkaContainerFactory() {
+    public ConcurrentKafkaListenerContainerFactory<String, Object> myKafkaContainerFactory() {
 
-        ConcurrentKafkaListenerContainerFactory<String, MessageAndRequest> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         return factory;
     }
 
     @Bean
-    ConsumerFactory<String, MessageAndRequest> consumerFactory() {
+    ConsumerFactory<String, Object> consumerFactory() {
         return new DefaultKafkaConsumerFactory<>(Map.of(
                 ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092",
                 ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false,
                 ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class,
                 ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class,
                 ConsumerConfig.GROUP_ID_CONFIG, "app2",
-                JsonDeserializer.TRUSTED_PACKAGES, "com.pszymczyk.training.app2",
-                JsonDeserializer.USE_TYPE_INFO_HEADERS, false,
-                JsonDeserializer.VALUE_DEFAULT_TYPE, MessageAndRequest.class));
+                JsonDeserializer.TRUSTED_PACKAGES, "com.pszymczyk.training.app2.*",
+                JsonDeserializer.VALUE_DEFAULT_TYPE, Object.class));
     }
 
     @Bean
