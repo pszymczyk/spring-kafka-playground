@@ -35,20 +35,16 @@ public class App2Server {
     }
 
     @Component
-    @KafkaListener(topics = "app2-messages-and-requests", containerFactory = "myKafkaContainerFactory")
     public class MyKafkaHandler {
 
-        @KafkaHandler
         void handleMessages(Message message) {
             logger.info("Server received message {}", message);
         }
 
-        @KafkaHandler
         void handleRequests(Request request) {
             logger.info("Server received request {}", request);
         }
 
-        @KafkaHandler(isDefault = true)
         void handleRequests(@Payload Object unknown,
                             @Header(KafkaHeaders.OFFSET) long offset,
                             @Header(KafkaHeaders.RECEIVED_PARTITION) int partitionId,
@@ -70,11 +66,7 @@ public class App2Server {
         return new DefaultKafkaConsumerFactory<>(Map.of(
                 ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092",
                 ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false,
-                ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class,
-                ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class,
-                ConsumerConfig.GROUP_ID_CONFIG, "app2",
-                JsonDeserializer.TRUSTED_PACKAGES, "com.pszymczyk.training.app2.*",
-                JsonDeserializer.VALUE_DEFAULT_TYPE, Object.class));
+                ConsumerConfig.GROUP_ID_CONFIG, "app2"));
     }
 
     @Bean
