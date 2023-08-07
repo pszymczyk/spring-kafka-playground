@@ -1,9 +1,7 @@
 package com.pszymczyk.training.app3_1.server;
 
-import com.pszymczyk.training.app1.server.App1Server;
 import com.pszymczyk.training.common.Utils;
 import org.apache.kafka.clients.admin.NewTopic;
-import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
