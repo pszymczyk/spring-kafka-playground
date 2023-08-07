@@ -49,12 +49,7 @@ public class App5Client {
             this.kafkaTemplate = kafkaTemplate;
         }
 
-        @Transactional
         public void send(String value) throws ExecutionException, InterruptedException, TimeoutException {
-            ProducerRecord<String, String> record = new ProducerRecord<>(APP_5, value);
-            CompletableFuture<SendResult<String, String>> replyFuture = kafkaTemplate.send(record);
-            SendResult<String, String> sendResult = replyFuture.get(10, TimeUnit.SECONDS);
-            logger.info("Client sent message, offset {}", sendResult.getRecordMetadata().offset());
         }
     }
 }
