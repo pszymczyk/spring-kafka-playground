@@ -27,7 +27,6 @@ public class App1Server {
     public static void main(String[] args) {
         SpringApplication application = new SpringApplication(App1Server.class);
         var properties = new Properties();
-        properties.put("spring.kafka.listener.concurrency", 5);
         application.setDefaultProperties(properties);
         application.run(args);
     }
@@ -44,10 +43,7 @@ public class App1Server {
 
     @Bean
     public NewTopic newTopic() {
-        return TopicBuilder.name(APP_1)
-                .partitions(5)
-                .replicas(1)
-                .build();
+        return null;
     }
 
     @Component
