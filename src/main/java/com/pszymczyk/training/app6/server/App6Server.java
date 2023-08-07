@@ -32,13 +32,9 @@ public class App6Server {
     public static void main(String[] args) {
         SpringApplication application = new SpringApplication(App6Server.class);
         var properties = new Properties();
-        properties.put("spring.kafka.consumer.enable-auto-commit", false);
         properties.put("spring.kafka.listener.ack-mode", "record");
         properties.put("spring.kafka.consumer.key-deserializer", StringDeserializer.class.getName());
         properties.put("spring.kafka.consumer.value-deserializer", JsonDeserializer.class.getName());
-        properties.put("spring.kafka.consumer.properties.spring.json.trusted.packages", "*");
-        properties.put("spring.kafka.consumer.properties.spring.json.value.default.type", LoanApplicationRequest.class.getName());
-        properties.put("spring.kafka.producer.transaction-id-prefix", APP_6_INPUT);
         properties.put("spring.kafka.producer.value-serializer", JsonSerializer.class.getName());
         properties.put("spring.kafka.producer.key-serializer", StringSerializer.class.getName());
         application.setDefaultProperties(properties);
@@ -58,24 +54,7 @@ public class App6Server {
         }
 
         @KafkaListener(topics = APP_6_INPUT, groupId = APP_6_INPUT)
-        @Transactional
         void handleMessages(LoanApplicationRequest loanApplicationRequest) {
-            if (debtorsRepository.getDebtors().contains(loanApplicationRequest.getRequester())) {
-                LoanApplicationDecision loanApplicationDecision = new LoanApplicationDecision();
-                loanApplicationDecision.setAmount(loanApplicationRequest.getAmount().multiply(new BigDecimal("0.5")));
-                loanApplicationDecision.setRequester(loanApplicationRequest.getRequester());
-                template.send(APP_6_OUTPUT, loanApplicationDecision);
-            } else if (debtorsRepository.getBlackList().contains(loanApplicationRequest.getRequester())) {
-                LoanApplicationDecision loanApplicationDecision = new LoanApplicationDecision();
-                loanApplicationDecision.setAmount(BigDecimal.ZERO);
-                loanApplicationDecision.setRequester(loanApplicationRequest.getRequester());
-                template.send(APP_6_OUTPUT, loanApplicationDecision);
-            } else {
-                LoanApplicationDecision loanApplicationDecision = new LoanApplicationDecision();
-                loanApplicationDecision.setAmount(loanApplicationRequest.getAmount());
-                loanApplicationDecision.setRequester(loanApplicationRequest.getRequester());
-                template.send(APP_6_OUTPUT, loanApplicationDecision);
-            }
         }
     }
 
