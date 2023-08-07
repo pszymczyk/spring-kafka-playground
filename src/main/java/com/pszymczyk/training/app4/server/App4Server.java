@@ -55,11 +55,7 @@ public class App4Server {
 
     @Bean
     public RetryTopicConfiguration myOtherRetryTopic(KafkaTemplate<String, String> template) {
-        return RetryTopicConfigurationBuilder
-                .newInstance()
-                .exponentialBackoff(1000, 2, 10_000)
-                .maxAttempts(4)
-                .create(template);
+        return null;
     }
 
     @Component
