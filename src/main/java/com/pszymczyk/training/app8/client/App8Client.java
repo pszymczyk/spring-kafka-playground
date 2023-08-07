@@ -36,17 +36,6 @@ public class App8Client {
             if (!template.waitForAssignment(Duration.ofSeconds(10))) {
                 throw new IllegalStateException("Reply container did not initialize");
             }
-            ProducerRecord<String, String> record = new ProducerRecord<>(APP_8_REQUESTS, "PING");
-            RequestReplyFuture<String, String, Collection<ConsumerRecord<String, String>>> replyFuture = template.sendAndReceive(record, Duration.ofMinutes(5));
-            ConsumerRecord<String, Collection<ConsumerRecord<String, String>>> replies = replyFuture.get(6, TimeUnit.MINUTES);
-
-            logger.info("Client received responses with headers:");
-            replies.value().forEach(
-                    cR -> {
-                        cR.headers().forEach(h -> {
-                            logger.info("Header, {}:{}", h.key(), h.value());
-                        });
-                    });
         };
     }
 
@@ -55,17 +44,13 @@ public class App8Client {
             ProducerFactory<String, String> pf,
             ConcurrentMessageListenerContainer<String, Collection<ConsumerRecord<String, String>>> repliesContainer) {
 
-        return new AggregatingReplyingKafkaTemplate<>(pf, repliesContainer, (consumerRecords, aBoolean) -> consumerRecords.size() > 1);
+        return null;
     }
 
     @Bean
     public ConcurrentMessageListenerContainer<String, Collection<ConsumerRecord<String, String>>> repliesContainer(
             ConcurrentKafkaListenerContainerFactory<String, Collection<ConsumerRecord<String, String>>> containerFactory) {
 
-        ConcurrentMessageListenerContainer<String, Collection<ConsumerRecord<String, String>>> repliesContainer =
-                containerFactory.createContainer(APP_8_REPLIES);
-        repliesContainer.getContainerProperties().setGroupId(UUID.randomUUID().toString());
-        repliesContainer.setAutoStartup(false);
-        return repliesContainer;
+        return null;
     }
 }
