@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.concurrent.ListenableFuture;
 
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -52,7 +53,7 @@ public class App5Client {
         @Transactional
         public void send(String value) throws ExecutionException, InterruptedException, TimeoutException {
             ProducerRecord<String, String> record = new ProducerRecord<>(APP_5, value);
-            ListenableFuture<SendResult<String, String>> replyFuture = kafkaTemplate.send(record);
+            CompletableFuture<SendResult<String, String>> replyFuture = kafkaTemplate.send(record);
             SendResult<String, String> sendResult = replyFuture.get(10, TimeUnit.SECONDS);
             logger.info("Client sent message, offset {}", sendResult.getRecordMetadata().offset());
         }
