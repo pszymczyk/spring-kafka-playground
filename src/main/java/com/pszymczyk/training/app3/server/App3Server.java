@@ -34,14 +34,12 @@ public class App3Server {
     @Component
     public class MyKafkaHandler {
 
-        @KafkaListener(topics = APP_3, groupId = APP_3, containerFactory = "myKafkaContainerFactory")
         void handleMessages(ConsumerRecord<String, String> message) {
             logger.info("Handle, message. Record headers: ");
             message.headers().forEach(header -> logger.info("{}:{}", header.key(), new String(header.value())));
             Utils.failSometimes();
         }
 
-        @KafkaListener(topics = APP_3 + ".DLT", groupId = APP_3 + ".DLT")
         public void processMessage(String message) {
             logger.info("Dlt received message {}", message);
         }
@@ -52,13 +50,8 @@ public class App3Server {
             ConsumerFactory<String, String> consumerFactory,
             KafkaTemplate<String, String> kafkaTemplate) {
 
-        DefaultErrorHandler errorHandler = new DefaultErrorHandler(
-                new DeadLetterPublishingRecoverer(kafkaTemplate),
-                new FixedBackOff(2000L, 2L));
-
         ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory);
-        factory.setCommonErrorHandler(errorHandler);
         return factory;
     }
 
