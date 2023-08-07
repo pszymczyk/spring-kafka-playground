@@ -35,10 +35,6 @@ public class App7Client {
             if (!template.waitForAssignment(Duration.ofSeconds(10))) {
                 throw new IllegalStateException("Reply container did not initialize");
             }
-            ProducerRecord<String, String> record = new ProducerRecord<>(APP_7_REQUESTS, "PING");
-            RequestReplyFuture<String, String, String> replyFuture = template.sendAndReceive(record, Duration.ofMinutes(5));
-            logger.info("Client received response with headers:");
-            replyFuture.get(6, TimeUnit.MINUTES).headers().forEach(h -> logger.info("Header, {}:{}", h.key(), h.value()));
         };
     }
 
@@ -46,18 +42,12 @@ public class App7Client {
     public ReplyingKafkaTemplate<String, String, String> replyingTemplate(
             ProducerFactory<String, String> pf,
             ConcurrentMessageListenerContainer<String, String> repliesContainer) {
-
-        return new ReplyingKafkaTemplate<>(pf, repliesContainer);
+        return null;
     }
 
     @Bean
     public ConcurrentMessageListenerContainer<String, String> repliesContainer(
             ConcurrentKafkaListenerContainerFactory<String, String> containerFactory) {
-
-        ConcurrentMessageListenerContainer<String, String> repliesContainer =
-                containerFactory.createContainer(APP_7_REPLIES);
-        repliesContainer.getContainerProperties().setGroupId(UUID.randomUUID().toString());
-        repliesContainer.setAutoStartup(false);
-        return repliesContainer;
+        return null;
     }
 }
