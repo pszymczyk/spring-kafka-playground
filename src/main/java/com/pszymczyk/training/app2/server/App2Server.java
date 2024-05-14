@@ -8,8 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.server.ConfigurableWebServerFactory;
-import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -31,30 +29,9 @@ public class App2Server {
     private final Logger logger = LoggerFactory.getLogger(App2Server.class);
 
     public static void main(String[] args) {
-        SpringApplication.run(App2Server.class, args);
-    }
-
-    @Component
-    @KafkaListener(topics = "app2-messages-and-requests", containerFactory = "myKafkaContainerFactory")
-    public class MyKafkaHandler {
-
-        @KafkaHandler
-        void handleMessages(Message message) {
-            logger.info("Server received message {}", message);
-        }
-
-        @KafkaHandler
-        void handleRequests(Request request) {
-            logger.info("Server received request {}", request);
-        }
-
-        @KafkaHandler(isDefault = true)
-        void handleRequests(@Payload Object unknown,
-                            @Header(KafkaHeaders.OFFSET) long offset,
-                            @Header(KafkaHeaders.RECEIVED_PARTITION) int partitionId,
-                            @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
-            logger.info("Server received unknown message {},{},{}", offset, partitionId, topic);
-        }
+        SpringApplication application = new SpringApplication(App2Server.class);
+        application.setDefaultProperties(Map.of("server.port", "8082"));
+        application.run(args);
     }
 
     @Bean
@@ -86,12 +63,26 @@ public class App2Server {
     }
 
     @Component
-    public class ServerPortCustomizer implements WebServerFactoryCustomizer<ConfigurableWebServerFactory> {
+    @KafkaListener(topics = "app2-messages-and-requests", containerFactory = "myKafkaContainerFactory")
+    public class MyKafkaHandler {
 
-        @Override
-        public void customize(ConfigurableWebServerFactory factory) {
-            factory.setPort(8081);
+        @KafkaHandler
+        void handleMessages(Message message) {
+            logger.info("Server received message {}", message);
+        }
+
+        @KafkaHandler
+        void handleRequests(Request request) {
+            logger.info("Server received request {}", request);
+        }
+
+        @KafkaHandler(isDefault = true)
+        void handleRequests(@Payload Object unknown,
+                            @Header(KafkaHeaders.OFFSET) long offset,
+                            @Header(KafkaHeaders.RECEIVED_PARTITION) int partitionId,
+                            @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
+            logger.info("Server received unknown message {},{},{}", offset, partitionId, topic);
+            logger.info("Unknown message to string {}", unknown);
         }
     }
-
 }
