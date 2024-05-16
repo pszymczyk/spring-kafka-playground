@@ -6,8 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.server.ConfigurableWebServerFactory;
-import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.config.TopicBuilder;
@@ -15,7 +13,7 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 
-import java.util.Properties;
+import java.util.Map;
 
 import static com.pszymczyk.training.app1.client.App1Client.APP_1;
 
@@ -26,20 +24,11 @@ public class App1Server {
 
     public static void main(String[] args) {
         SpringApplication application = new SpringApplication(App1Server.class);
-        var properties = new Properties();
-        properties.put("spring.kafka.listener.concurrency", 5);
-        application.setDefaultProperties(properties);
+        application.setDefaultProperties(Map.of(
+                "spring.kafka.listener.concurrency", 5,
+                "server.port", "8082"
+        ));
         application.run(args);
-    }
-
-    @Component
-    public class MyKafkaHandler {
-
-        @KafkaListener(topics = APP_1, groupId = APP_1)
-        void handleMessages(ConsumerRecord<String, String> message,
-                            @Header(KafkaHeaders.RECEIVED_PARTITION) int partition) {
-            logger.info("Handle, message. Record k: {}, partition: {}", message.key(), partition);
-        }
     }
 
     @Bean
@@ -51,12 +40,12 @@ public class App1Server {
     }
 
     @Component
-    public class ServerPortCustomizer implements WebServerFactoryCustomizer<ConfigurableWebServerFactory> {
+    public class MyKafkaHandler {
 
-        @Override
-        public void customize(ConfigurableWebServerFactory factory) {
-            factory.setPort(8081);
+        @KafkaListener(topics = APP_1, groupId = APP_1)
+        void handleMessages(ConsumerRecord<String, String> message,
+                            @Header(KafkaHeaders.RECEIVED_PARTITION) int partition) {
+            logger.info("Handle, message. Record k: {}, partition: {}", message.key(), partition);
         }
     }
-
 }

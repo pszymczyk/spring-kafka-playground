@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -20,7 +21,9 @@ public class App3_1Client {
     private final Logger logger = LoggerFactory.getLogger(App3_1Client.class);
 
     public static void main(String[] args) {
-        SpringApplication.run(App3_1Client.class, args).close();
+        SpringApplication application = new SpringApplication(App3_1Client.class);
+        application.setDefaultProperties(Map.of("server.port", "8081"));
+        application.run(args).close();
     }
 
     @Bean
