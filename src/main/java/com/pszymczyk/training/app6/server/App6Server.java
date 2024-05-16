@@ -35,6 +35,8 @@ public class App6Server {
         properties.put("spring.kafka.consumer.value-deserializer", JsonDeserializer.class.getName());
         properties.put("spring.kafka.producer.value-serializer", JsonSerializer.class.getName());
         properties.put("spring.kafka.producer.key-serializer", StringSerializer.class.getName());
+        properties.put("spring.kafka.consumer.properties.spring.json.trusted.packages", "*");
+        properties.put("spring.kafka.consumer.properties.spring.json.value.default.type", LoanApplicationRequest.class.getName());
         application.setDefaultProperties(properties);
         application.run(args);
     }
