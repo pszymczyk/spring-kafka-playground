@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -17,20 +18,18 @@ import java.util.concurrent.TimeUnit;
 public class App3Client {
 
     public static final String APP_3 = "app3";
-    private final Logger logger = LoggerFactory.getLogger(App3Client.class);
 
     public static void main(String[] args) {
-        SpringApplication.run(App3Client.class, args).close();
+        SpringApplication application = new SpringApplication(App3Client.class);
+        application.setDefaultProperties(Map.of("server.port", "8081"));
+        application.run(args).close();
     }
 
     @Bean
     public ApplicationRunner runner(KafkaTemplate<String, String> template) {
         return args -> {
             ProducerRecord<String, String> record = new ProducerRecord<>(APP_3, "PING");
-            CompletableFuture<SendResult<String, String>> replyFuture = template.send(record);
-            SendResult<String, String> sendResult = replyFuture.get(10, TimeUnit.SECONDS);
-
-            logger.info("Client sent ok, {}", sendResult.getProducerRecord().value());
+            template.send(record).get();
         };
     }
 }
