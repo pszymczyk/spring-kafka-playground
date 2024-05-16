@@ -10,7 +10,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import java.math.BigDecimal;
-import java.util.Properties;
+import java.util.Map;
 
 @SpringBootApplication
 public class App6Client {
@@ -20,12 +20,12 @@ public class App6Client {
 
     public static void main(String[] args) {
         SpringApplication application = new SpringApplication(App6Client.class);
-        var properties = new Properties();
-        properties.put("spring.kafka.producer.value-serializer", JsonSerializer.class.getName());
-        properties.put("spring.kafka.producer.key-serializer", StringSerializer.class.getName());
-        application.setDefaultProperties(properties);
+        application.setDefaultProperties(Map.of(
+                "spring.kafka.producer.key-serializer", StringSerializer.class.getName(),
+                "spring.kafka.producer.value-serializer", JsonSerializer.class.getName(),
+                "server.port", "8081"
+        ));
         application.run(args).close();
-
     }
 
     @Bean
