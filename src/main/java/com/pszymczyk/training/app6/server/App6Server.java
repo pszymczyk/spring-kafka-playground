@@ -31,7 +31,6 @@ public class App6Server {
         SpringApplication application = new SpringApplication(App6Server.class);
         var properties = new Properties();
         properties.put("server.port", "8082");
-        properties.put("spring.kafka.listener.ack-mode", "record");
         properties.put("spring.kafka.consumer.key-deserializer", StringDeserializer.class.getName());
         properties.put("spring.kafka.consumer.value-deserializer", JsonDeserializer.class.getName());
         properties.put("spring.kafka.producer.value-serializer", JsonSerializer.class.getName());
