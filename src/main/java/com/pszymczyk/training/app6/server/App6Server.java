@@ -16,13 +16,10 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.Properties;
 
 import static com.pszymczyk.training.app6.client.App6Client.APP_6_INPUT;
-import static com.pszymczyk.training.app6.client.App6Client.APP_6_OUTPUT;
 
 @SpringBootApplication
 public class App6Server {
