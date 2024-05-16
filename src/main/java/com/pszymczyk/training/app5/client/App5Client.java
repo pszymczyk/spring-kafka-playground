@@ -13,7 +13,7 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Properties;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -26,9 +26,10 @@ public class App5Client {
 
     public static void main(String[] args) {
         SpringApplication application = new SpringApplication(App5Client.class);
-        var properties = new Properties();
-        properties.put("spring.kafka.producer.transactionIdPrefix", "app5");
-        application.setDefaultProperties(properties);
+        application.setDefaultProperties(Map.of(
+                "server.port", "8081",
+                "spring.kafka.producer.transactionIdPrefix", "app5"
+        ));
         application.run(args).close();
     }
 

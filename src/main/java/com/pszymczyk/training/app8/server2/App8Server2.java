@@ -7,13 +7,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.server.ConfigurableWebServerFactory;
-import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.stereotype.Component;
+
+import java.util.Map;
 
 @SpringBootApplication
 public class App8Server2 {
@@ -21,7 +20,9 @@ public class App8Server2 {
     private final Logger logger = LoggerFactory.getLogger(App8Server2.class);
 
     public static void main(String[] args) {
-        SpringApplication.run(App8Server2.class, args);
+        SpringApplication application = new SpringApplication(App8Server2.class);
+        application.setDefaultProperties(Map.of("server.port", "8083"));
+        application.run(args);
     }
 
     @KafkaListener(id = "app8-server-2", topics = App8Client.APP_8_REQUESTS)
@@ -46,14 +47,5 @@ public class App8Server2 {
                 .partitions(1)
                 .replicas(1)
                 .build();
-    }
-
-    @Component
-    public class ServerPortCustomizer implements WebServerFactoryCustomizer<ConfigurableWebServerFactory> {
-
-        @Override
-        public void customize(ConfigurableWebServerFactory factory) {
-            factory.setPort(8082);
-        }
     }
 }
