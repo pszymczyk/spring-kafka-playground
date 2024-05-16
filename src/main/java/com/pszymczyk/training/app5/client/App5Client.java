@@ -27,8 +27,7 @@ public class App5Client {
     public static void main(String[] args) {
         SpringApplication application = new SpringApplication(App5Client.class);
         application.setDefaultProperties(Map.of(
-                "server.port", "8081",
-                "spring.kafka.producer.transactionIdPrefix", "app5"
+                "server.port", "8081"
         ));
         application.run(args).close();
     }
