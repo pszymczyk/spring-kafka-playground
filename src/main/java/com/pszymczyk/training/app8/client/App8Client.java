@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
+import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.requestreply.AggregatingReplyingKafkaTemplate;
 import org.springframework.kafka.requestreply.RequestReplyFuture;
 
@@ -46,9 +47,8 @@ public class App8Client {
             logger.info("Client received responses with headers:");
             replies.value().forEach(
                     cR -> {
-                        cR.headers().forEach(h -> {
-                            logger.info("Header, {}:{}", h.key(), h.value());
-                        });
+                        logger.info("Message {}", cR.value());
+                        cR.headers().forEach(h -> logger.info("Header, {}:{}", h.key(), h.value()));
                     });
         };
     }
@@ -68,6 +68,7 @@ public class App8Client {
         ConcurrentMessageListenerContainer<String, Collection<ConsumerRecord<String, String>>> repliesContainer =
                 containerFactory.createContainer(APP_8_REPLIES);
         repliesContainer.getContainerProperties().setGroupId(UUID.randomUUID().toString());
+        repliesContainer.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
         repliesContainer.setAutoStartup(false);
         return repliesContainer;
     }
