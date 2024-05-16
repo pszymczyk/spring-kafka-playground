@@ -32,7 +32,6 @@ public class App6Server {
         var properties = new Properties();
         properties.put("server.port", "8082");
         properties.put("spring.kafka.consumer.enable-auto-commit", false);
-        properties.put("spring.kafka.listener.ack-mode", "record");
         properties.put("spring.kafka.consumer.key-deserializer", StringDeserializer.class.getName());
         properties.put("spring.kafka.consumer.value-deserializer", JsonDeserializer.class.getName());
         properties.put("spring.kafka.consumer.properties.spring.json.trusted.packages", "*");
