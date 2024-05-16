@@ -1,7 +1,6 @@
 package com.pszymczyk.training.app8.client;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.producer.ProducerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationRunner;
@@ -12,13 +11,10 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.requestreply.AggregatingReplyingKafkaTemplate;
-import org.springframework.kafka.requestreply.RequestReplyFuture;
 
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 @SpringBootApplication
 public class App8Client {
