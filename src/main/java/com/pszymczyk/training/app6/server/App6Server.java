@@ -9,8 +9,6 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.server.ConfigurableWebServerFactory;
-import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.config.TopicBuilder;
@@ -32,6 +30,7 @@ public class App6Server {
     public static void main(String[] args) {
         SpringApplication application = new SpringApplication(App6Server.class);
         var properties = new Properties();
+        properties.put("server.port", "8082");
         properties.put("spring.kafka.consumer.enable-auto-commit", false);
         properties.put("spring.kafka.listener.ack-mode", "record");
         properties.put("spring.kafka.consumer.key-deserializer", StringDeserializer.class.getName());
@@ -43,6 +42,14 @@ public class App6Server {
         properties.put("spring.kafka.producer.key-serializer", StringSerializer.class.getName());
         application.setDefaultProperties(properties);
         application.run(args);
+    }
+
+    @Bean
+    public NewTopic newTopic() {
+        return TopicBuilder.name(APP_6_INPUT)
+                .partitions(1)
+                .replicas(1)
+                .build();
     }
 
     @Component
@@ -78,22 +85,4 @@ public class App6Server {
             }
         }
     }
-
-    @Bean
-    public NewTopic newTopic() {
-        return TopicBuilder.name(APP_6_INPUT)
-                .partitions(1)
-                .replicas(1)
-                .build();
-    }
-
-    @Component
-    public class ServerPortCustomizer implements WebServerFactoryCustomizer<ConfigurableWebServerFactory> {
-
-        @Override
-        public void customize(ConfigurableWebServerFactory factory) {
-            factory.setPort(8081);
-        }
-    }
-
 }
