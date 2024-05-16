@@ -16,6 +16,7 @@ import org.springframework.kafka.requestreply.RequestReplyFuture;
 
 import java.time.Duration;
 import java.util.Collection;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -27,7 +28,9 @@ public class App8Client {
     private final Logger logger = LoggerFactory.getLogger(App8Client.class);
 
     public static void main(String[] args) {
-        SpringApplication.run(App8Client.class, args).close();
+        SpringApplication application = new SpringApplication(App8Client.class);
+        application.setDefaultProperties(Map.of("server.port", "8081"));
+        application.run(args).close();
     }
 
     @Bean
