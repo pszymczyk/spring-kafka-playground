@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   broker:
-    image: apache/kafka:latest
+    image: apache/kafka:3.7.1
     hostname: broker
     container_name: broker
     ports:
@@ -24,7 +24,7 @@ services:
       KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
 
   console:
-    image: docker.redpanda.com/redpandadata/console:latest
+    image: docker.redpanda.com/redpandadata/console:v2.7.1
     restart: on-failure
     entrypoint: /bin/sh
     command: -c "echo \"$$CONSOLE_CONFIG_FILE\" > /tmp/config.yml; /app/console"
