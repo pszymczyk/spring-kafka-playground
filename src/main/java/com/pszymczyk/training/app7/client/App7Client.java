@@ -23,7 +23,8 @@ public class App7Client {
 
     public static final String APP_7_REQUESTS = "app7-requests";
     public static final String APP_7_REPLIES = "app7-replies";
-    private final Logger logger = LoggerFactory.getLogger(App7Client.class);
+
+    private static final Logger logger = LoggerFactory.getLogger(App7Client.class);
 
     public static void main(String[] args) {
         SpringApplication application = new SpringApplication(App7Client.class);
